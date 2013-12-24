@@ -10,9 +10,15 @@
 #  password_digest :string(255)
 #  created_at      :datetime
 #  updated_at      :datetime
+#  is_guest        :boolean
 #
 
 class User < ActiveRecord::Base
+  has_many :members
+  has_many :workspaces, through: :members
+  has_many :groupies
+  has_many :groups, through: :groupies
+  
   validates :fname, presence: true, length: { maximum: 50 }
   validates :lname, presence: true, length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i

@@ -1,0 +1,20 @@
+# == Schema Information
+#
+# Table name: groups
+#
+#  id           :integer          not null, primary key
+#  workspace_id :integer
+#  name         :string(255)
+#  created_at   :datetime
+#  updated_at   :datetime
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  workspace_id: 1
+  name: MyString
+
+two:
+  workspace_id: 1
+  name: MyString

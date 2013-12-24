@@ -11,10 +11,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131224032755) do
+ActiveRecord::Schema.define(version: 20131224185647) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "followers", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "item_id"
+    t.boolean  "is_owner"
+    t.boolean  "can_edit"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "groupies", force: true do |t|
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "groups", force: true do |t|
+    t.integer  "workspace_id"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "members", force: true do |t|
+    t.integer  "workspace_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", force: true do |t|
     t.string   "fname"
@@ -22,6 +52,13 @@ ActiveRecord::Schema.define(version: 20131224032755) do
     t.string   "password"
     t.string   "remember_token"
     t.string   "password_digest"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "is_guest"
+  end
+
+  create_table "workspaces", force: true do |t|
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
