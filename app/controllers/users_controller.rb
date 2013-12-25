@@ -38,6 +38,9 @@ class UsersController < ApplicationController
 
   def save_login(user)
     return false if user.blank?
+    # Change remember token on every login
+    user.create_remember_token
+    user.save
     cookies.permanent.signed[:user_remember] = user.remember_token
     return true
   end
