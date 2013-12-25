@@ -6,7 +6,11 @@ class UsersController < ApplicationController
     u = User.create(user_params)
     success = (u.blank?) ? 0 : 1
     login_success = (params[:user][:should_log_in] && save_login(u)) ? 1 : 0
-    render json: { success:success, should_log_in:params[:user][:should_log_in], login_success:login_success }
+    if success && login_success
+      redirect_to root_path
+    else
+      render json: { success:success, should_log_in:params[:user][:should_log_in], login_success:login_success }
+    end
     return true
   end
 
@@ -19,7 +23,11 @@ class UsersController < ApplicationController
     else
       success = 0
     end
-    render json: { success: success }
+    if success
+      redirect_to root_path
+    else
+      render json: { success: success }
+    end
     return (success > 0) ? true : false
   end
 
