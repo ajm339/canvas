@@ -18,7 +18,12 @@ class User < ActiveRecord::Base
   has_many :workspaces, through: :members
   has_many :groupies
   has_many :groups, through: :groupies
-  
+  has_many :viewers
+  has_many :items, through: :viewers
+  has_many :followers # Items being followed
+  has_many :items, through: :followers
+  has_many :item_contents
+
   validates :fname, presence: true, length: { maximum: 50 }
   validates :lname, presence: true, length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i

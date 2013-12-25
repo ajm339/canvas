@@ -1,0 +1,23 @@
+# == Schema Information
+#
+# Table name: items
+#
+#  id              :integer          not null, primary key
+#  position_top    :integer
+#  position_left   :integer
+#  item_content_id :integer
+#  created_at      :datetime
+#  updated_at      :datetime
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  position_top: 1
+  position_left: 1
+  item_content_id: 1
+
+two:
+  position_top: 1
+  position_left: 1
+  item_content_id: 1
