@@ -1,3 +1,48 @@
 // Place all the styles related to the session controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+@import 'variables';
+#login_signup {
+  // height: 195px;
+  height: 161px;
+  width: 265px;
+  @include vendor-prefix(transition, height 0.5s);
+  #signup {
+    // height: 158px;
+    height: 124px;
+    width: 265px;
+    @include vendor-prefix(transition, height 0.5s);
+    #new_user {
+      display: none;
+      #user_fname, #user_lname {
+        width: 124px;
+      }
+      #user_email, #user_password {
+        width: 251px;
+      }
+      #submit_new_user {
+        width: 251px;
+      }
+    }
+    #login_user {
+      #user_email, #user_password {
+        width: 251px;
+      }
+      #login_user {
+        width: 251px;
+      }
+    }
+  }
+  #toggleLogin {
+    display: none;
+  }
+  #toggleSignup {
+    display: inline-block;
+    float: left;
+  }
+  #resetPassword {
+    display: inline-block;
+    float: right;
+  }
+}

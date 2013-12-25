@@ -1,0 +1,14 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic);
+
+@mixin vendor-prefix($name, $argument) {
+  #{$name}: #{ $argument };
+  -webkit-#{$name}: #{ $argument };
+  -ms-#{$name}: #{ $argument };
+  -moz-#{$name}: #{ $argument };
+  -o-#{$name}: #{ $argument };
+}
+
+$green: #62AF68;
+
+$panel-border-radius: 4px;
+$panel-shadow: 0 0 2px 1px transparentize(black, 0.8);

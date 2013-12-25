@@ -1,1 +1,25 @@
 <% provide(:title, 'Welcome to Canvas &mdash; Log in or sign up'.html_safe) %>
+<div class='AbsoluteCenter' id='login_signup'>
+  <div class='Panel' id='signup'>
+    <%= form_for User.new do |u| %>
+      <%= u.text_field :fname, placeholder: 'First name' %>
+      <%= u.text_field :lname, placeholder: 'Last name' %>
+      <br />
+      <%= u.email_field :email, placeholder: 'Email' %>
+      <br />
+      <%= u.password_field :password, placeholder: 'Password' %>
+      <br />
+      <%= u.submit 'Create account', id: 'submit_new_user' %>
+    <% end %>
+    <%= form_for User.new, html: { id: 'login_user' } do |u| %>
+      <%= u.email_field :email, placeholder: 'Email' %>
+      <br />
+      <%= u.password_field :password, placeholder: 'Password' %>
+      <br />
+      <%= u.submit 'Login', id: 'login_user' %>
+    <% end %>
+  </div>
+  <p class='InlineAction' id='toggleLogin'>Login to account</p>
+  <p class='InlineAction' id='toggleSignup'>Create account</p>
+  <p class='InlineAction' id='resetPassword'>Reset password</p>
+</div>

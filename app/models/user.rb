@@ -11,6 +11,7 @@
 #  created_at      :datetime
 #  updated_at      :datetime
 #  is_guest        :boolean
+#  email           :string(255)
 #
 
 class User < ActiveRecord::Base
