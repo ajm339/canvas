@@ -16,7 +16,10 @@ Canvas::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  root 'session#new', constraints: SessionController.new
+  constraints SessionController.new do
+    get '/', to: 'session#new', as: 'login_root'
+  end
+  get '/', to: 'items#index', as: 'root'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
