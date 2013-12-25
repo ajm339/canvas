@@ -41,6 +41,7 @@ input[type] {
   height: 32px;
   // line-height: 14px;
   margin: 2px auto;
+  min-height: 0;
   padding: 8px 10px;
   @include vendor-prefix(transition, "border-color ease-in-out .15s, box-shadow ease-in-out .15s");
   &:focus {

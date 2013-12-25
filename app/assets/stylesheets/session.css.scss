@@ -4,21 +4,29 @@
 
 @import 'variables';
 #login_signup {
-  // height: 195px;
   height: 161px;
   width: 265px;
   @include vendor-prefix(transition, height 0.5s);
+  &.Expand {
+    height: 195px;
+    #signup {
+      height: 158px;
+    }
+  }
   #signup {
-    // height: 158px;
-    height: 124px;
+    height: 123px;
     width: 265px;
     @include vendor-prefix(transition, height 0.5s);
     #new_user {
       display: none;
-      #user_fname, #user_lname {
-        width: 124px;
+      #newUserName {
+        display: none;
+        #user_fname, #user_lname {
+          width: 124px;
+        }
       }
       #user_email, #user_password {
+        // vertical-align: top;
         width: 251px;
       }
       #submit_new_user {
@@ -36,13 +44,22 @@
   }
   #toggleLogin {
     display: none;
+    &.Visible {
+      display: inline-block;
+      float: left;
+    }
   }
   #toggleSignup {
-    display: inline-block;
-    float: left;
+    display: none;
+    &.Visible {
+      display: inline-block;
+      float: left;
+    }
   }
   #resetPassword {
     display: inline-block;
     float: right;
+    opacity: 0.25;
+    pointer-events: none;
   }
 }
