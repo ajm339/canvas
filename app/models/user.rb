@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
 
-  has_secure_password
+  has_secure_password validations: false  # Don't require password confirmation
   before_save { create_remember_token if (self.remember_token.blank? && self.password_digest && defined?(self.password_digest)) }
   before_save { |user| user.email = email.downcase }
 

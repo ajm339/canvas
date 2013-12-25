@@ -1,10 +1,13 @@
 require 'session_controller'
 
 Canvas::Application.routes.draw do
+  get "users/create"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
    
   resource :users
+  get '/login', to: 'session#new', as: :login
+  post '/login', to: 'users#login', as: :save_login
   
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
@@ -13,7 +16,7 @@ Canvas::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  root 'session#new', constraints: lambda { |req| !SessionController.is_logged_in?(req) }
+  root 'session#new', constraints: SessionController.new
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

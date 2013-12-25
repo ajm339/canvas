@@ -2,6 +2,7 @@
 <div class='AbsoluteCenter' id='login_signup'>
   <div class='Panel' id='signup'>
     <%= form_for User.new do |u| %>
+      <%= u.hidden_field :should_log_in, value: true %>
       <div id='newUserName'>
       <%= u.text_field :fname, placeholder: 'First name' %>
       <%= u.text_field :lname, placeholder: 'Last name' %>
@@ -12,8 +13,8 @@
       <br />
       <%= u.submit 'Create account', id: 'submit_new_user' %>
     <% end %>
-    <%= form_for User.new, html: { id: 'login_user' } do |u| %>
-      <%= u.email_field :email, placeholder: 'Email' %>
+    <%= form_for User.new, url: save_login_path, html: { id: 'login_user' } do |u| %>
+      <%= u.email_field :email, placeholder: 'Email', autofocus: 'autofocus' %>
       <br />
       <%= u.password_field :password, placeholder: 'Password' %>
       <br />
