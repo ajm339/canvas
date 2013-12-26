@@ -1,4 +1,15 @@
 @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700,400italic);
+$Canvas: 'Canvas';
+@font-face {
+  font-family: 'Canvas';
+  src: asset-url('canvas.eot');
+  src: asset-url('canvas.eot?#iefix') format('embedded-opentype'),
+       asset-url('canvas.woff') format('woff'),
+       asset-url('canvas.ttf') format('truetype'),
+       asset-url('canvas.svg#canvas') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
 
 @mixin vendor-prefix($name, $argument) {
   #{$name}: #{ $argument };
@@ -12,3 +23,5 @@ $green: #62AF68;
 
 $panel-border-radius: 4px;
 $panel-shadow: 0 0 2px 1px transparentize(black, 0.8);
+
+$sidebar-base: #52515e;
