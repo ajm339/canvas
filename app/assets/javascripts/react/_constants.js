@@ -7,3 +7,4 @@ var ICON_MESSAGE = '\ue805';
 var ICON_EMAIL = '\ue806';
 var ICON_USER = '\ue807';
 var ICON_POWER = '\ue808';
+var ICON_NOTIFICATION = '\ue809';

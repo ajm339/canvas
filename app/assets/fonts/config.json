@@ -37,21 +37,27 @@
       "src": "entypo"
     },
     {
+      "uid": "c77fd2fd065b5fe16d6f2b41e190b266",
+      "css": "pencil",
+      "code": 59392,
+      "src": "entypo"
+    },
+    {
       "uid": "2c0b53280f82068f6bab4e2200025d9f",
       "css": "chat",
       "code": 59397,
       "src": "entypo"
     },
     {
-      "uid": "1d7c1d30ad49a988556273a238097c2a",
-      "css": "doc-text-inv",
-      "code": 59392,
-      "src": "entypo"
-    },
-    {
       "uid": "413717f5ea649e8d8b93938be277264a",
       "css": "calendar",
       "code": 59395,
+      "src": "entypo"
+    },
+    {
+      "uid": "489090690d8bd1745e365485946e20a8",
+      "css": "megaphone",
+      "code": 59401,
       "src": "entypo"
     },
     {

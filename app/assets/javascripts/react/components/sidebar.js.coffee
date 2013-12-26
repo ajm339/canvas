@@ -1,4 +1,4 @@
-ITEM_TYPES = ['Note', 'Image', 'Event', 'Task', 'Message']
+ITEM_TYPES = ['Note', 'Event', 'File', 'Task', 'Message']
 ItemAddButton = React.createClass
   render: ->
     React.DOM.li
