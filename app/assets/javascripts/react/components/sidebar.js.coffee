@@ -27,4 +27,4 @@ Sidebar = React.createClass
           children: 'Add new item'
         ItemAddList()
       ]
-# React.renderComponent(Sidebar(), document.body)
+React.renderComponent(Sidebar(), document.body)

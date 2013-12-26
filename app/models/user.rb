@@ -43,6 +43,8 @@ class User < ActiveRecord::Base
     user_canvas.item = canvas
     user_canvas.save
     canvas.save
+    # Update root_item_id field in DB without triggering after_save infinitely
+    # By updating DB column directly
     self.update_column(:root_item_id, canvas.id)
   end
 

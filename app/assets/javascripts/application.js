@@ -19,4 +19,4 @@
 //= require backbone_datalink
 //= require backbone/canvas
 //= require react.min
-//= require_tree .
+// require_tree .
