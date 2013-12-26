@@ -5,13 +5,13 @@
 #  id              :integer          not null, primary key
 #  fname           :string(255)
 #  lname           :string(255)
-#  password        :string(255)
 #  remember_token  :string(255)
 #  password_digest :string(255)
 #  created_at      :datetime
 #  updated_at      :datetime
 #  is_guest        :boolean
 #  email           :string(255)
+#  root_item_id    :integer
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

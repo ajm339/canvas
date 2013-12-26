@@ -3,6 +3,7 @@
   <div class='Panel' id='signup'>
     <%= form_for User.new do |u| %>
       <%= u.hidden_field :should_log_in, value: true %>
+      <%= u.hidden_field :is_guest, value: false %>
       <div id='newUserName'>
       <%= u.text_field :fname, placeholder: 'First name' %>
       <%= u.text_field :lname, placeholder: 'Last name' %>

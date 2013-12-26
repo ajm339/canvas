@@ -11,19 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131225030259) do
+ActiveRecord::Schema.define(version: 20131226214858) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "collections", force: true do |t|
-    t.integer  "parent_id"
-    t.integer  "item_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "events", force: true do |t|
+  create_table "containers", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -73,14 +66,9 @@ ActiveRecord::Schema.define(version: 20131225030259) do
   create_table "items", force: true do |t|
     t.integer  "position_top"
     t.integer  "position_left"
-    t.integer  "item_content_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "media_files", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.boolean  "is_root"
   end
 
   create_table "members", force: true do |t|
@@ -90,31 +78,16 @@ ActiveRecord::Schema.define(version: 20131225030259) do
     t.datetime "updated_at"
   end
 
-  create_table "messages", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "notes", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "tasks", force: true do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "users", force: true do |t|
     t.string   "fname"
     t.string   "lname"
-    t.string   "password"
     t.string   "remember_token"
     t.string   "password_digest"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "is_guest"
     t.string   "email"
+    t.integer  "root_item_id"
   end
 
   create_table "viewers", force: true do |t|

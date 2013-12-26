@@ -18,12 +18,12 @@ class UsersController < ApplicationController
     # TODO: Add error messages?
     user = User.find_by_email(params[:user][:email].downcase)
     success = 1
-    if user && user.authenticate(params[:user][:password])
+    if !user.blank? && user.authenticate(params[:user][:password])
       save_login(user)
     else
       success = 0
     end
-    if success
+    if success > 0
       redirect_to root_path
     else
       render json: { success: success }
@@ -33,7 +33,7 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:fname, :lname, :email, :password)
+    params.require(:user).permit(:fname, :lname, :email, :password, :is_guest)
   end
 
   def save_login(user)
