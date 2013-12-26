@@ -1,3 +1,11 @@
 // Place all the styles related to the items controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+#itemsLoading {
+  height: 40px;
+  text-align: center;
+  h1 {
+    color: #888;
+    font-weight: 400;
+  }
+}
