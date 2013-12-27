@@ -6,14 +6,14 @@ module Api
       respond_to :json
 
       def index
-        respond_with User.find(params[:user_id]).followed_items
+        respond_with User.find_by_remember_token(remember_token).followed_items
       end
       def show
         respond_with Item.find(params[:id])
       end
 
       def root
-        respond_with User.find(params[:user_id]).root_item
+        respond_with User.find_by_remember_token(remember_token).root_item
       end
     end
   end
