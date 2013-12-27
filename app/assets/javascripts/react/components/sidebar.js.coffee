@@ -1,22 +1,27 @@
-ITEM_TYPES = ['Note', 'Event', 'File', 'Task', 'Message']
-ItemAddButton = React.createClass
+# Create namespace for our components
+# New namespace if nothing exists yet
+# to avoid polluting the global namespace
+window.Canvas or= {}
+window.Canvas.ITEM_TYPES = ['Note', 'Event', 'File', 'Task', 'Message']
+# Create components under our namespace
+Canvas.ItemAddButton = React.createClass
   render: ->
     React.DOM.li
       className: 'ItemAddButton',
       children: [
         React.DOM.span
           className: 'Icon'
-          children: window['ICON_' + ITEM_TYPES[@props.index].toUpperCase()]
+          children: window['ICON_' + Canvas.ITEM_TYPES[@props.index].toUpperCase()]
         React.DOM.p
           className: 'ItemAddButtonLabel'
-          children: ITEM_TYPES[@props.index]
+          children: Canvas.ITEM_TYPES[@props.index]
       ]
-ItemAddList = React.createClass
+Canvas.ItemAddList = React.createClass
   render: ->
     React.DOM.ul
       id: 'itemAddList',
-      children: ItemAddButton(index:num) for num in [0...ITEM_TYPES.length]
-Sidebar = React.createClass
+      children: Canvas.ItemAddButton(index:num) for num in [0...Canvas.ITEM_TYPES.length]
+Canvas.Sidebar = React.createClass
   render: ->
     React.DOM.section 
       className: 'Sidebar',
@@ -25,6 +30,5 @@ Sidebar = React.createClass
         React.DOM.h1
           className: 'SidebarPrompt'
           children: 'Add new item'
-        ItemAddList()
+        Canvas.ItemAddList()
       ]
-React.renderComponent(Sidebar(), document.body)

@@ -1,0 +1,1 @@
+React.renderComponent(Canvas.Sidebar(), document.body)
