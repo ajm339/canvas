@@ -43,6 +43,7 @@ class User < ActiveRecord::Base
     user_canvas.item = canvas
     user_canvas.save
     canvas.save
+    Follower.create(user_id: self.id, item_id: canvas.id)
     # Update root_item_id field in DB without triggering after_save infinitely
     # By updating DB column directly
     self.update_column(:root_item_id, canvas.id)
@@ -54,5 +55,16 @@ class User < ActiveRecord::Base
 
   def create_remember_token
     self.remember_token = SecureRandom.urlsafe_base64(32, false)
+  end
+
+  def as_json(options = {})
+    super(except: [:password_digest])
+  end
+
+  def followed_items
+    return self.followers.map(&:item)
+  end
+  def viewed_items
+    return self.viewers.map(&:item)
   end
 end
