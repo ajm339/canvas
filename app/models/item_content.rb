@@ -25,6 +25,14 @@ class ItemContent < ActiveRecord::Base
   belongs_to :item
   belongs_to :user
 
+  validates :item, presence: true
+  validates :user, presence: true
+
+  after_create do
+    self.item.latest_content_id = self.id
+    self.item.save
+  end
+
   def creator
     return self.user
   end

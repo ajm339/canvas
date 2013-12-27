@@ -2,13 +2,13 @@
 #
 # Table name: items
 #
-#  id              :integer          not null, primary key
-#  position_top    :integer
-#  position_left   :integer
-#  item_content_id :integer
-#  created_at      :datetime
-#  updated_at      :datetime
-#  is_root         :boolean
+#  id                :integer          not null, primary key
+#  position_top      :integer
+#  position_left     :integer
+#  created_at        :datetime
+#  updated_at        :datetime
+#  is_root           :boolean
+#  latest_content_id :integer
 #
 
 class Item < ActiveRecord::Base
@@ -23,4 +23,8 @@ class Item < ActiveRecord::Base
   has_many :items, through: :collections
   has_many :inverse_collections, class_name: 'Collection', foreign_key: 'parent_id'
   has_many :inverse_items, through: :inverse_collections, source: :item
+
+  def as_json(options = {})
+    return { item: super(options), contents: self.item_contents }
+  end
 end

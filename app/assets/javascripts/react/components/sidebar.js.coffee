@@ -21,7 +21,6 @@ Canvas.SidebarProfile = React.createClass
           children: initials
         React.DOM.p
           className: 'SidebarProfileName'
-          # children: ((this.state.user.fname?) ? this.state.user.fname : 'Your name')
           children: name
       ]
 Canvas.SidebarSearch = React.createClass
@@ -33,7 +32,7 @@ Canvas.SidebarSearch = React.createClass
           type: 'text'
           placeholder: 'Search everything'
 
-Canvas.FILTER_TYPES = ['Event', 'Task', 'File']
+Canvas.FILTER_TYPES = ['Event', 'Task', 'File', 'Message']
 Canvas.SidebarFilterButton = React.createClass
   render: ->
     React.DOM.li

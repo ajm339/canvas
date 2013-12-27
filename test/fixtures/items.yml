@@ -2,13 +2,13 @@
 #
 # Table name: items
 #
-#  id              :integer          not null, primary key
-#  position_top    :integer
-#  position_left   :integer
-#  item_content_id :integer
-#  created_at      :datetime
-#  updated_at      :datetime
-#  is_root         :boolean
+#  id                :integer          not null, primary key
+#  position_top      :integer
+#  position_left     :integer
+#  created_at        :datetime
+#  updated_at        :datetime
+#  is_root           :boolean
+#  latest_content_id :integer
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
