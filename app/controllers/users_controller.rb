@@ -31,6 +31,16 @@ class UsersController < ApplicationController
     return (success > 0) ? true : false
   end
 
+  def logout
+    u = User.find_by_remember_token(cookies.signed[:user_remember])
+    u.create_remember_token
+    u.save
+    cookies.delete :user_remember
+    render json: { success: 1 }
+    puts '======== Logged out ========='
+    return true
+  end
+
   private
   def user_params
     params.require(:user).permit(:fname, :lname, :email, :password, :is_guest)

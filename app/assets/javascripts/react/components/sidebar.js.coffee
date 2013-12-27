@@ -46,6 +46,11 @@ Canvas.SidebarFilter = React.createClass
           children: Canvas.SidebarFilterButton(index: num) for num in [0...Canvas.FILTER_TYPES.length]
 
 Canvas.SidebarFooter = React.createClass
+  logout: ->
+    # Coffeescript syntax for AJAX:
+    # http://coffeescriptcookbook.com/chapters/jquery/ajax
+    $.get '/logout', (resp) ->
+        window.location = '/'
   render: ->
     React.DOM.footer
       className: 'SidebarInset'
@@ -58,6 +63,7 @@ Canvas.SidebarFooter = React.createClass
         React.DOM.span
           className: 'Icon'
           id: 'sidebarLogoutIcon'
+          onClick: this.logout
           children: window['ICON_POWER']
       ]
 

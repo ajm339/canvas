@@ -24,6 +24,7 @@ Canvas::Application.routes.draw do
     get '/', to: 'session#new', as: 'login_root'
   end
   get '/', to: 'items#index', as: 'root'
+  get '/logout', to: 'users#logout', as: :logout
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
