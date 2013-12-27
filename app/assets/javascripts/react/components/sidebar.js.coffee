@@ -2,33 +2,83 @@
 # New namespace if nothing exists yet
 # to avoid polluting the global namespace
 window.Canvas or= {}
-window.Canvas.ITEM_TYPES = ['Note', 'Event', 'File', 'Task', 'Message']
+# window.Canvas.ITEM_TYPES = ['Note', 'Event', 'File', 'Task', 'Message']
 # Create components under our namespace
-Canvas.ItemAddButton = React.createClass
+Canvas.SidebarProfile = React.createClass
+  render: ->
+    React.DOM.div
+      className: 'SidebarProfile'
+      children: [
+        React.DOM.div
+          className: 'SidebarProfilePicture'
+          children: 'FZ'
+        React.DOM.p
+          className: 'SidebarProfileName'
+          children: 'Feifan Zhou'
+      ]
+Canvas.SidebarSearch = React.createClass
+  render: ->
+    React.DOM.div
+      className: 'SidebarSearch'
+      children:
+        React.DOM.input
+          type: 'text'
+          placeholder: 'Search everything'
+
+Canvas.FILTER_TYPES = ['Event', 'Task', 'File']
+Canvas.SidebarFilterButton = React.createClass
   render: ->
     React.DOM.li
-      className: 'ItemAddButton',
+      className: 'Filter'
+      id: Canvas.FILTER_TYPES[@props.index].toLowerCase() + 'Filter'
+      children:
+        React.DOM.span
+          className: 'Icon'
+          children: window['ICON_' + Canvas.FILTER_TYPES[@props.index].toUpperCase()]
+Canvas.SidebarFilter = React.createClass
+  render: ->
+    React.DOM.div
+      id: 'sidebarFilters'
+      children:
+        React.DOM.ul
+          className: 'SidebarHorizontalList'
+          id: 'filtersList'
+          children: Canvas.SidebarFilterButton(index: num) for num in [0...Canvas.FILTER_TYPES.length]
+
+Canvas.SidebarFooter = React.createClass
+  render: ->
+    React.DOM.footer
+      className: 'SidebarInset'
+      id: 'sidebarFooter'
       children: [
         React.DOM.span
           className: 'Icon'
-          children: window['ICON_' + Canvas.ITEM_TYPES[@props.index].toUpperCase()]
-        React.DOM.p
-          className: 'ItemAddButtonLabel'
-          children: Canvas.ITEM_TYPES[@props.index]
+          id: 'sidebarSettingsIcon'
+          children: window['ICON_SETTING']
+        React.DOM.span
+          className: 'Icon'
+          id: 'sidebarLogoutIcon'
+          children: window['ICON_POWER']
       ]
-Canvas.ItemAddList = React.createClass
-  render: ->
-    React.DOM.ul
-      id: 'itemAddList',
-      children: Canvas.ItemAddButton(index:num) for num in [0...Canvas.ITEM_TYPES.length]
+
 Canvas.Sidebar = React.createClass
   render: ->
     React.DOM.section 
       className: 'Sidebar',
       id: 'sidebar',
       children: [
+        # Canvas.ItemAddList()
+        Canvas.SidebarProfile()
+        Canvas.SidebarSearch()
         React.DOM.h1
           className: 'SidebarPrompt'
-          children: 'Add new item'
-        Canvas.ItemAddList()
+          children: 'Pinned items'
+        React.DOM.p
+          id: 'noPinnedItems'
+          children: 'No pinned items'
+        React.DOM.h1
+          className: 'SidebarPrompt'
+          children: 'Filter items'
+        Canvas.SidebarFilter()
+        Canvas.SidebarFooter()
       ]

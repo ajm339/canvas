@@ -1,0 +1,1 @@
+window.Canvas or= {}
