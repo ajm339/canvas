@@ -36,4 +36,8 @@ class ItemContent < ActiveRecord::Base
   def creator
     return self.user
   end
+
+  def as_json(options = {})
+    return super(options).merge({ type: self.type })
+  end
 end

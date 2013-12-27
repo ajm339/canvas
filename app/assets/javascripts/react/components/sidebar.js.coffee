@@ -7,7 +7,6 @@ window.Canvas or= {}
 Canvas.SidebarProfile = React.createClass
   getInitialState: ->
     $.get '/api/v1/user', (resp) =>
-      console.log('Get initial state')
       @setState({ user:resp })
       return { user: {} }
   render: ->
