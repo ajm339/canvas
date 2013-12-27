@@ -41,11 +41,11 @@ class User < ActiveRecord::Base
     user_canvas = Container.new
     user_canvas.user = self
     user_canvas.version = 0
-    canvas = Item.new(is_root: true, position_top: 0, position_left: 0)
+    canvas = Item.new(is_root: true, position_top: 0, position_left: 0, creator_id: self.id)
     user_canvas.item = canvas
     user_canvas.save
     canvas.save
-    Follower.create(user_id: self.id, item_id: canvas.id)
+    Follower.create(user_id: self.id, item_id: canvas.id, is_owner: true, can_edit: true)
     Permission.create(user_id: self.id, item_id: canvas.id, can_see: true)
     # Update root_item_id field in DB without triggering after_save infinitely
     # By updating DB column directly

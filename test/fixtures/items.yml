@@ -9,6 +9,7 @@
 #  updated_at        :datetime
 #  is_root           :boolean
 #  latest_content_id :integer
+#  creator_id        :integer
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

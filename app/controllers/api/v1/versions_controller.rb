@@ -4,7 +4,7 @@ module Api
     class VersionsController < ApiController
       before_filter :can_access?
       before_filter :valid_item?
-      before_filter :valid_version?
+      before_filter :valid_version?, only: [:show]
       respond_to :json
 
       def index

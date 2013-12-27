@@ -9,6 +9,7 @@
 #  updated_at        :datetime
 #  is_root           :boolean
 #  latest_content_id :integer
+#  creator_id        :integer
 #
 
 class Item < ActiveRecord::Base
@@ -24,8 +25,14 @@ class Item < ActiveRecord::Base
   has_many :inverse_collections, class_name: 'Collection', foreign_key: 'parent_id'
   has_many :inverse_items, through: :inverse_collections, source: :item
 
+  validates :creator_id, presence: true
+
   def latest_content
     return ItemContent.find(self.latest_content_id)
+  end
+
+  def creator
+    return User.find(self.creator_id)
   end
 
   def as_json(options = {})
