@@ -11,10 +11,10 @@ Canvas.SidebarProfile = React.createClass
       children: [
         React.DOM.div
           className: 'SidebarProfilePicture'
-          children: 'FZ'
+          children: 'YN'
         React.DOM.p
           className: 'SidebarProfileName'
-          children: 'Feifan Zhou'
+          children: 'Your Name'
       ]
 Canvas.SidebarSearch = React.createClass
   render: ->
