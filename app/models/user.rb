@@ -58,7 +58,7 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(except: [:password_digest])
+    super(except: [:password_digest]).merge({ display_name: self.display_name })
   end
 
   def followed_items

@@ -7,7 +7,7 @@ Canvas::Application.routes.draw do
    
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
-      resources :users do
+      resource :user do
         resources :items
         get '/root_item', to: 'items#root', as: :user_root_item
       end

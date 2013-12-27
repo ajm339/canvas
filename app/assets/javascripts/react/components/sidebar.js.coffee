@@ -5,16 +5,24 @@ window.Canvas or= {}
 # window.Canvas.ITEM_TYPES = ['Note', 'Event', 'File', 'Task', 'Message']
 # Create components under our namespace
 Canvas.SidebarProfile = React.createClass
+  getInitialState: ->
+    $.get '/api/v1/user', (resp) =>
+      console.log('Get initial state')
+      @setState({ user:resp })
+      return { user: {} }
   render: ->
+    initials = if this.state.user then this.state.user.fname.slice(0,1) + this.state.user.lname.slice(0,1) else ''
+    name = if this.state.user then this.state.user.display_name else ''
     React.DOM.div
       className: 'SidebarProfile'
       children: [
         React.DOM.div
           className: 'SidebarProfilePicture'
-          children: 'YN'
+          children: initials
         React.DOM.p
           className: 'SidebarProfileName'
-          children: 'Your Name'
+          # children: ((this.state.user.fname?) ? this.state.user.fname : 'Your name')
+          children: name
       ]
 Canvas.SidebarSearch = React.createClass
   render: ->
