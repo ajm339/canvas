@@ -9,6 +9,7 @@ Canvas::Application.routes.draw do
     namespace :v1 do
       resources :users do
         resources :items
+        get '/root_item', to: 'items#root', as: :user_root_item
       end
     end
   end

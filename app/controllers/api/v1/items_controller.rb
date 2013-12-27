@@ -11,6 +11,10 @@ module Api
       def show
         respond_with Item.find(params[:id])
       end
+
+      def root
+        respond_with User.find(params[:user_id]).root_item
+      end
     end
   end
 end

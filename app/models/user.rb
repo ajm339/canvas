@@ -67,4 +67,7 @@ class User < ActiveRecord::Base
   def viewed_items
     return self.viewers.map(&:item)
   end
+  def root_item
+    return Item.find(self.root_item_id)
+  end
 end
