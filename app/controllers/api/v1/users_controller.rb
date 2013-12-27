@@ -6,7 +6,7 @@ module Api
       respond_to :json
 
       def show
-        respond_with User.find_by_remember_token(cookies.signed[:user_remember] || params[:user_remember] || nil)
+        respond_with current_user
       end
     end
   end

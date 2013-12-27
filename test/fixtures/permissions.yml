@@ -1,0 +1,23 @@
+# == Schema Information
+#
+# Table name: permissions
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  item_id    :integer
+#  can_see    :boolean
+#  created_at :datetime
+#  updated_at :datetime
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 1
+  item_id: 1
+  can_see: false
+
+two:
+  user_id: 1
+  item_id: 1
+  can_see: false

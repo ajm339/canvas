@@ -23,6 +23,8 @@ class User < ActiveRecord::Base
   has_many :items, through: :viewers
   has_many :followers # Items being followed
   has_many :items, through: :followers
+  has_many :permissions # Items the user can see
+  has_many :items, through: :permissions
   has_many :item_contents
 
   validates :fname, presence: true, length: { maximum: 50 }
@@ -44,6 +46,7 @@ class User < ActiveRecord::Base
     user_canvas.save
     canvas.save
     Follower.create(user_id: self.id, item_id: canvas.id)
+    Permission.create(user_id: self.id, item_id: canvas.id, can_see: true)
     # Update root_item_id field in DB without triggering after_save infinitely
     # By updating DB column directly
     self.update_column(:root_item_id, canvas.id)
@@ -69,5 +72,15 @@ class User < ActiveRecord::Base
   end
   def root_item
     return Item.find(self.root_item_id)
+  end
+  def all_visible_items
+    return self.permissions.map(&:item)
+  end
+  def can_see_item_with_id?(item_id)
+    perm = Permission.find_by_item_id_and_user_id(item_id, self.id)
+    return perm.blank? ? false : perm.can_see
+  end
+  def can_see_item?(item)
+    return self.can_see_item_with_id(item.id)
   end
 end

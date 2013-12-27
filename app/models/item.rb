@@ -24,7 +24,11 @@ class Item < ActiveRecord::Base
   has_many :inverse_collections, class_name: 'Collection', foreign_key: 'parent_id'
   has_many :inverse_items, through: :inverse_collections, source: :item
 
+  def latest_content
+    return ItemContent.find(self.latest_content_id)
+  end
+
   def as_json(options = {})
-    return { item: super(options), contents: self.item_contents }
+    return super(options).merge({ latest_content: self.latest_content })
   end
 end

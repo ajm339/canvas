@@ -8,8 +8,12 @@ Canvas::Application.routes.draw do
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       resource :user do
-        resources :items
+        resources :items do
+          resources :versions
+        end
         get '/root_item', to: 'items#root', as: :user_root_item
+        get '/root_item/versions', to: 'versions#root', as: :user_root_item_versions
+        get '/root_item/versions/:id', to: 'versions#show', as: :user_root_item_version
       end
     end
   end
