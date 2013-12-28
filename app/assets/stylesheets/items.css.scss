@@ -147,12 +147,21 @@
       right: 0;
       top: 0;
     }
+    .ItemDragHandle {
+      background: $green;
+      height: 4px;
+      margin: auto;
+      width: 100%;
+      &:hover {
+        cursor: move;
+      }
+    }
     .Note {
       border: 1px solid transparentize(black, 0.9);
       padding: 4px;
       @include vendor-prefix(transition, border 0.25s);
       &:focus {
-        outline: 2px solid transparentize($green, 0.35);
+        outline: 2px solid lighten(transparentize($green, 0.35), 15%);
       }
       &:hover {
         border: 1px solid transparentize(black, 0.75);
