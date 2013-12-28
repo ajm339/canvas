@@ -147,6 +147,13 @@
       right: 0;
       top: 0;
     }
+    &.Selected {
+      .Note {
+        border: 1px solid #999;
+        border-top: none;
+        outline: 1px solid $green;
+      }
+    }
     .ItemDragHandle {
       background: $green;
       height: 4px;
@@ -158,13 +165,16 @@
     }
     .Note {
       border: 1px solid transparentize(black, 0.9);
+      border-top: none;
       padding: 4px;
       @include vendor-prefix(transition, border 0.25s);
       &:focus {
-        outline: 2px solid lighten(transparentize($green, 0.35), 15%);
+        outline: $selected-item-outline;
+        outline-top: none;
       }
       &:hover {
         border: 1px solid transparentize(black, 0.75);
+        border-top: none;
       }
     }
   }

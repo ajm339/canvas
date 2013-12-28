@@ -2,15 +2,19 @@ window.Canvas or= {}
 Canvas.DragHandle = React.createClass
   getInitialState: ->
     return { isDragging: false, xOffset: 0 }
+  mouseClick: ->
+    @props.select()
   mouseDown: ->
     @props.beginDrag(@props.item)
   render: ->
     React.DOM.div
       className: 'ItemDragHandle'
+      onClick: this.mouseClick
       onMouseDown: this.mouseDown
+Canvas.SelectedItem = null
 Canvas.Item = React.createClass
   getInitialState: ->
-    if !@props.item then { left: 0, top: 0, currentlyDragging: null, draggingDiff: 0 } else { left: @props.item.position_left, top: @props.item.position_top, currentlyDragging: null, draggingDiff: 0 }
+    if !@props.item then { left: 0, top: 0, currentlyDragging: null, draggingDiff: 0, isSelected: false } else { left: @props.item.position_left, top: @props.item.position_top, currentlyDragging: null, draggingDiff: 0, isSelected: false }
   componentWillMount: ->
     @setState({ left: @props.item.position_left, top: @props.item.position_top }) if @props.item
     # Bind event handler to self
@@ -39,12 +43,18 @@ Canvas.Item = React.createClass
     @endDrag(@state.currentlyDragging) if @state.currentlyDragging
   updateLocation: (x, y) ->
     @setState({ left: x, top: y})
+  deselect: ->
+    @setState({ isSelected: false })
+  select: ->
+    Canvas.SelectedItem.deselect() if Canvas.SelectedItem
+    @setState({ isSelected: !@state.isSelected })
+    Canvas.SelectedItem = this
   render: ->
     return React.DOM.div({}) if !@props.item  # AJAX hasn't loaded yet
     children = []
     if !@props.item.is_root  # Add drag handle if item isn't root
       children = [
-        Canvas.DragHandle({ item:@props.item, updateLocation:this.updateLocation, beginDrag:this.beginDrag, endDrag:this.endDrag })
+        Canvas.DragHandle({ item:@props.item, updateLocation:this.updateLocation, beginDrag:this.beginDrag, endDrag:this.endDrag, select:this.select  })
         # dot property can be accessed like a key-value array
         Canvas[@props.item.latest_content.type]({ item: @props.item })
       ]
@@ -61,7 +71,7 @@ Canvas.Item = React.createClass
         children.push(Canvas.Item({ item: this.props.item.children[i], onClick: _t.props.onClick, isLast: is_last }));
       }`
     React.DOM.div
-      className: 'Item' + (if @props.item && @props.item.is_root then ' RootItem' else '')
+      className: 'Item' + (if @props.item && @props.item.is_root then ' RootItem' else '') + (if @state.isSelected then ' Selected' else '')
       'data-item-id': @props.item.id
       style: { left: @state.left, top: @state.top}
       onClick: @props.onClick
