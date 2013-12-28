@@ -3,12 +3,15 @@ Canvas.DragHandle = React.createClass
   getInitialState: ->
     return { isDragging: false, xOffset: 0 }
   mouseDown: ->
-    mouseX = event.clientX - 200
-    itemX = @props.item.position_left
-    diff = mouseX - itemX
-    @setState({ isDragging: true, xOffset: diff })
+    # mouseX = event.clientX - 200
+    # itemX = @props.item.position_left
+    # diff = mouseX - itemX
+    # @setState({ isDragging: true, xOffset: diff })
+    @props.beginDrag(@props.item)
   mouseUp: ->
-    @setState({ isDragging: false })
+    # TODO: May be redundant as the parent Item handles mouseup
+    @props.endDrag(@props.item)
+    # @setState({ isDragging: false })
   mouseMove: (event) ->
     return if !@state.isDragging
     @props.updateLocation(event.clientX - 200 - @state.xOffset, event.clientY)
@@ -21,18 +24,33 @@ Canvas.DragHandle = React.createClass
 Canvas.Item = React.createClass
   getInitialState: ->
     if !@props.item
-      return { left: 0, top: 0 }
-    else
-      return { left: @props.item.position_left, top: @props.item.position_top }
+      return { left: 0, top: 0, currentlyDragging: null, draggingDiff: 0 }
+    else 
+      return { left: @props.item.position_left, top: @props.item.position_top, currentlyDragging: null, draggingDiff: 0 }
   componentWillMount: ->
-    if @props.item
-      @setState({ left: @props.item.position_left, top: @props.item.position_top })
+    @setState({ left: @props.item.position_left, top: @props.item.position_top }) if @props.item
+    window.addEventListener('mousemove', this.mouseMove, true)
+    window.addEventListener('mouseup', this.mouseUp, true)
+  componentWillUnmount: ->
+    window.removeEventListener('mousemove', this.mouseMove, true)
+    window.removeEventListener('mouseup', this.mouseUp, true)
   componentDidMount: (node) ->
-    if !@props.isLast
-      return
+    return if !@props.isLast
     # Need to focus on contents
     # http://stackoverflow.com/a/3305469/472768
     $(node).contents().focus()
+  beginDrag: (item) ->
+    mouseX = event.clientX - 200
+    itemX = @state.left
+    diff = mouseX - itemX
+    @setState({ currentlyDragging: item, draggingDiff: diff })
+  endDrag: (item) ->
+    @setState({ currentlyDragging: null, draggingDiff: 0 })
+  mouseMove: (event) ->
+    return if !@state.currentlyDragging
+    @setState({ left: event.clientX - 200 - @state.draggingDiff, top: event.clientY })
+  mouseUp: (event) ->
+    @endDrag(@state.currentlyDragging) if @state.currentlyDragging
   updateLocation: (x, y) ->
     @setState({ left: x, top: y})
   render: ->
@@ -41,7 +59,7 @@ Canvas.Item = React.createClass
     children = []
     if !@props.item.is_root
       children = [
-        Canvas.DragHandle({ item:@props.item, updateLocation:this.updateLocation })
+        Canvas.DragHandle({ item:@props.item, updateLocation:this.updateLocation, beginDrag:this.beginDrag, endDrag:this.endDrag })
         # dot property can be accessed like a key-value array
         Canvas[@props.item.latest_content.type]({ item: @props.item })
       ]
