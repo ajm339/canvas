@@ -1,14 +1,20 @@
 window.Canvas or= {}
 Canvas.Item = React.createClass
   render: ->
-    type = if @props.item then @props.item.latest_content.type else 'Unknown'
-    style = if @props.item then { left: @props.item.position_left, top: @props.item.position_top} else { left: 0, top: 0 }
+    if !@props.item  # AJAX hasn't loaded yet
+      return React.DOM.div({})
+    children = [
+      # dot property can be accessed like a key-value array
+      Canvas[@props.item.latest_content.type]({ item: @props.item })
+    ]
+    if @props.item.children
+      _t = this
+      children.push(Canvas.Item({ item: i, onClick: _t.props.onClick })) for i in @props.item.children
     React.DOM.div
-      className: 'Item'
-      style: style
-      children: [
-        Canvas[type]({ item: @props.item })  # dot property can be accessed like a key-value array
-      ]
+      className: 'Item' + (if @props.item && @props.item.is_root then ' RootItem' else '')
+      style: { left: @props.item.position_left, top: @props.item.position_top}
+      onClick: @props.onClick
+      children: children
 
 Canvas.Unknown = React.createClass
   render: ->
@@ -16,7 +22,17 @@ Canvas.Unknown = React.createClass
       className: 'Unknown'
 Canvas.Container = React.createClass
   render: ->
+    if !@props.item || !@props.item.latest_content  # AJAX hasn't loaded yet
+      return React.DOM.div({})
     React.DOM.div
       className: @props.item.latest_content.type
       'data-version': @props.item.latest_content.version
-      children: 'This is a ' + @props.item.latest_content.type + ' thing'
+Canvas.Note = React.createClass
+  render: ->
+    if !@props.item || !@props.item.latest_content  # AJAX hasn't loaded yet
+      return React.DOM.div({})
+    React.DOM.div
+      className: @props.item.latest_content.type
+      'data-version': @props.item.latest_content.version
+      contentEditable: true
+      children: 'Note'

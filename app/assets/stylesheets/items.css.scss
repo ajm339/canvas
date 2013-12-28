@@ -141,5 +141,19 @@
   top: 0;
   .Item {
     position: absolute;
+    &.RootItem {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+    }
+    .Note {
+      border: 1px solid transparentize(black, 0.9);
+      padding: 4px;
+      @include vendor-prefix(transition, border 0.25s);
+      &:hover {
+        border: 1px solid transparentize(black, 0.75);
+      }
+    }
   }
 }
