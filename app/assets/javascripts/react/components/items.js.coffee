@@ -9,6 +9,7 @@ Canvas.Item = React.createClass
     ]
     if @props.item.children
       _t = this
+      # Recursively render all children Items. API should set limit on depth of recursion
       children.push(Canvas.Item({ item: i, onClick: _t.props.onClick })) for i in @props.item.children
     React.DOM.div
       className: 'Item' + (if @props.item && @props.item.is_root then ' RootItem' else '')
