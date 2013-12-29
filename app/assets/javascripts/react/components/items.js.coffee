@@ -27,7 +27,14 @@ Canvas.RootItem = React.createClass
   handleClick: (event) ->
     if @state.selectedIndex > -1 then @setState({ selectedIndex: -1 }) else this.addItem(event.clientX - 200, event.clientY)
   mouseUp: (event) ->
+    i = @state.children[@state.dragIndex]
     @setState({ dragIndex: -1 })
+    return if !i
+    path = '/api/v1/user/items/' + i.id
+    $.ajax path,
+      type: 'PATCH'
+      data: { position_top: i.position_top, position_left: i.position_left }
+      success: -> console.log('Updated location of item with id ' + i.id)
   mouseMove: (event) ->
     return if @state.dragIndex < 0
     event.preventDefault()  # Prevent highlighting other things
@@ -83,7 +90,6 @@ Canvas.RootItem = React.createClass
     event.preventDefault()  # Prevent backspace from navigating page
     this.removeSelectedItem()
   render: ->
-    console.log('Item render state children: ' + @state.children)
     cdn = []
     if @state.children
       cdn.push(Canvas.Item({ item: c, index: i, select: this.selectItemAtIndex, selected: (i == @state.selectedIndex), beginDrag: this.beginDraggingItemAtIndex })) for c, i in @state.children
@@ -132,6 +138,14 @@ Canvas.Container = React.createClass
 Canvas.Note = React.createClass
   componentDidMount: ->
     @refs.note.getDOMNode().focus()
+  finishEditing: ->
+    text = $(@refs.note.getDOMNode()).text()
+    itemID = $(@refs.note.getDOMNode()).parent().data('item-id')
+    path = '/api/v1/user/items/' + itemID
+    $.ajax path,
+      type: 'PATCH'
+      data: { text: text }
+      success: -> console.log('Updated text of item with id ' + itemID)
   pressedKey: (event) ->
     event.stopPropagation() # Prevent backspace/delete from bubbling up to root
   render: ->
@@ -143,5 +157,6 @@ Canvas.Note = React.createClass
       'data-version': @props.item.latest_content.version
       contentEditable: true
       # children: @props.text
-      children: ''
+      children: @props.item.latest_content.content || ''
+      onBlur: this.finishEditing
       onKeyUp: this.pressedKey

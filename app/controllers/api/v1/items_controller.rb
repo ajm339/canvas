@@ -3,7 +3,7 @@ module Api
   module V1
     class ItemsController < ApiController
       before_filter :can_access?
-      before_filter :valid_item?, only: [:show, :destroy]
+      before_filter :valid_item?, only: [:show, :update, :destroy]
       respond_to :json
 
       def index
@@ -19,6 +19,23 @@ module Api
       end
       def create
         i = Item.create_with_params_and_parent_for_user(params[:item], params[:parent_id], current_user.id)
+        render json: { id: i.id }
+      end
+      def update
+        i = Item.find(params[:id])
+        i.position_top = params[:position_top] if !params[:position_top].blank?
+        i.position_left = params[:position_left] if !params[:position_left].blank?
+        if !params[:text].blank?
+          curr_content = ItemContent.find(i.latest_content_id)
+          n = Note.new
+          n.user = current_user
+          n.content = params[:text]
+          n.version = curr_content.version + 1
+          n.item = i
+          n.save
+          i.latest_content_id = n.id
+        end
+        i.save
         render json: { id: i.id }
       end
       def destroy
