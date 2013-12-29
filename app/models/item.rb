@@ -54,10 +54,17 @@ class Item < ActiveRecord::Base
     return User.find(self.creator_id)
   end
   def children
-    return self.inverse_items
+    return self.inverse_items.to_a
   end
 
   def as_json(options = {})
     return super(options).merge({ latest_content: self.latest_content })
+  end
+  def as_json_with_children(recurse_depth = 1)
+    if recurse_depth > 0
+      children_json = []
+      self.children.each do |c| children_json << c.as_json_with_children(recurse_depth - 1) end
+    end
+    return self.as_json().merge({ latest_content: self.latest_content, children: children_json || [] })
   end
 end

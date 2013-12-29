@@ -10,7 +10,7 @@ module Api
         respond_with current_user.followed_items
       end
       def show
-        respond_with Item.find(params[:id])
+        render json: Item.find(params[:id]).as_json_with_children(1)
       end
       def create
         i = Item.create_with_params_and_parent_for_user(params[:item], params[:parent_id], current_user.id)
@@ -30,7 +30,7 @@ module Api
       end
 
       def root
-        respond_with current_user.root_item
+        render json: current_user.root_item.as_json_with_children(1)
       end
     end
   end
