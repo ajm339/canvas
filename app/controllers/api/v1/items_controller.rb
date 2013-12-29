@@ -10,7 +10,12 @@ module Api
         respond_with current_user.followed_items
       end
       def show
-        render json: Item.find(params[:id]).as_json_with_children(1)
+        depth = (params[:show_children].blank?) ? 0 : params[:show_children].to_i
+        if depth > 0
+          render json: Item.find(params[:id]).as_json_with_children(depth)
+        else
+          respond_with Item.find(params[:id])
+        end
       end
       def create
         i = Item.create_with_params_and_parent_for_user(params[:item], params[:parent_id], current_user.id)
@@ -30,7 +35,12 @@ module Api
       end
 
       def root
-        render json: current_user.root_item.as_json_with_children(1)
+        depth = (params[:show_children].blank?) ? 0 : params[:show_children].to_i
+        if depth > 0
+          render json: current_user.root_item.as_json_with_children(depth)
+        else
+          respond_with current_user.root_item
+        end
       end
     end
   end
