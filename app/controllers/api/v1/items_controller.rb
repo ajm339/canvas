@@ -3,7 +3,7 @@ module Api
   module V1
     class ItemsController < ApiController
       before_filter :can_access?
-      before_filter :valid_item?, only: [:show]
+      before_filter :valid_item?, only: [:show, :destroy]
       respond_to :json
 
       def index
