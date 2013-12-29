@@ -139,13 +139,54 @@
   position: absolute;
   right: 0;
   top: 0;
+  .RootItemHeader {
+    background: white;
+    border-bottom: 1px solid #CCC;
+    overflow: hidden;
+    margin-left: 1px;
+    padding: 6px;
+    .RootItemSearch {
+      display: inline-block;
+      float: left;
+    }
+    .RootItemAdd {
+      border-left: 1px solid #CCC;
+      display: inline-block;
+      float: right;
+      padding-left: 6px;
+      .RootItemAddPrompt {
+        display: inline-block;
+        margin: 0;
+        vertical-align: middle;
+      }
+      .RootItemAddButtons {
+        display: inline-block;
+        vertical-align: middle;
+        .ItemAddButton {
+          border: 1px solid white;
+          border-radius: 4px;
+          color: #444;
+          display: inline-block;
+          font-size: 22px;
+          margin: 0px 7px;
+          padding: 4px 8px;
+          @include vendor-prefix(transition, "background 0.25s, border 0.25s");
+          &:hover {
+            background: #DDD;
+            border: 1px solid #BBB;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
   .Item {
     position: absolute;
     &.RootItem {
       bottom: 0;
       left: 0;
       right: 0;
-      top: 0;
+      top: 52px !important;
     }
     &.Selected {
       .Note {

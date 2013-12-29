@@ -2,7 +2,6 @@
 # New namespace if nothing exists yet
 # to avoid polluting the global namespace
 window.Canvas or= {}
-# window.Canvas.ITEM_TYPES = ['Note', 'Event', 'File', 'Task', 'Message']
 # Create components under our namespace
 Canvas.SidebarProfile = React.createClass
   getInitialState: ->
