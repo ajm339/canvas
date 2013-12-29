@@ -13,6 +13,7 @@ Canvas.DragHandle = React.createClass
       onMouseDown: @props.onMouseDown
 Canvas.RootItem = React.createClass
   getInitialState: ->
+    # TODO: Get root item here, rather than in ItemsContainer
     if !@props.item 
       return { left: 0, top: 0, children: [], selectedIndex: -1, dragIndex: -1, dragDiff: 0 }
     else
@@ -45,12 +46,27 @@ Canvas.RootItem = React.createClass
       }
     }
     currChildren = @state.children
+    currIndex = currChildren.length
     currChildren.push(child)
     @setState({ children: currChildren })
+    $.post '/api/v1/user/items',
+      item: child,
+      parent_id: @props.item.id
+      (resp) =>
+        child.id = resp.id
+        currChildren = @state.children
+        currChildren[currIndex] = child
+        @setState({ children: currChildren })
   removeSelectedItem: ->
     children = @state.children
-    children.splice(@state.selectedIndex, 1)
+    i = children.splice(@state.selectedIndex, 1)
     @setState({ children: children, selectedIndex: -1 })
+    return if i.length < 1 || !i[0].id
+    i = i[0]  # Get first element out of array — removed item
+    path = '/api/v1/user/items/' + i.id
+    $.ajax path,
+      type: 'DELETE'
+      success: -> console.log('Deleted item with id ' + i.id)
   selectItemAtIndex: (index) ->
     @setState({ selectedIndex: index })
   beginDraggingItemAtIndex: (index, dragX) ->

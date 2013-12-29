@@ -27,12 +27,34 @@ class Item < ActiveRecord::Base
 
   validates :creator_id, presence: true
 
+  def self.create_with_params_and_parent_for_user(item_params, parent_id, user_id)
+    # Only for non-root items
+    content_class = item_params[:latest_content][:type]
+    return false if !content_class.casecmp('Note').zero?  # Only allow notes for now
+    n = Note.new
+    n.user = User.find(user_id)
+    n.version = 0
+    i = Item.new(is_root: false, position_top: item_params[:position_top], position_left: item_params[:position_left], creator_id: user_id)
+    n.item = i
+    n.save  # TODO: Maybe i should be saved before n? Same in User.rb
+    i.latest_content_id = n.id
+    i.save
+    i.delete and n.delete and return false if parent.blank?
+    Collection.create(parent_id: parent_id, item_id: i.id)
+    Follower.create(user_id: user_id, item_id: i.id, is_owner: true, can_edit: true)
+    Permission.create(user_id: user_id, item_id: i.id, can_see: true)
+    return i
+  end
+
   def latest_content
     return ItemContent.find(self.latest_content_id)
   end
 
   def creator
     return User.find(self.creator_id)
+  end
+  def children
+    return self.inverse_items
   end
 
   def as_json(options = {})
