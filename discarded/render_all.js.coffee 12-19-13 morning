@@ -1,0 +1,57 @@
+window.Canvas or= {}
+Canvas.ItemCount = 0
+Canvas.ItemsContainer = React.createClass
+  getInitialState: ->
+    $.get '/api/v1/user/root_item', (resp) =>
+      @setState({ root_item:resp })
+      return { root_item: {} }
+  addItem: (event) ->
+    return false if event.nativeEvent.target.className.indexOf('RootItem') < 0
+    item = @state.root_item
+    child = {
+      itemID: Canvas.ItemCount
+      position_top: event.clientY
+      position_left: event.clientX - 200  # Account for sidebar width
+      is_root: false
+      latest_content: {
+        version: 0
+        type: 'Note'
+      }
+    }
+    Canvas.ItemCount++
+    if !item.children
+      item.children = [child]
+    else
+      item.children.push(child)
+    @setState({ root_item:item })
+    # TODO: Save item to server
+  removeItem: (index) ->
+    alert('Invalid index') if index < 0
+    console.log('Remove item: ' + index)
+    item = @state.root_item
+    currChildren = item.children
+    console.log('Curr children: ' + JSON.stringify(currChildren, null, 2))
+    newChildren = []
+    `for (var i = 0; i < currChildren.length; i++) {
+      if (i !== index)
+        newChildren.push(currChildren[i])
+    }`
+    console.log('New children: ' + JSON.stringify(newChildren, null, 2))
+    if newChildren.length < 1
+      item.children = null
+    else
+      item.children = newChildren
+    @setState({ root_item:item })
+  render: ->
+    React.DOM.div
+      id: 'items'
+      children: Canvas.Item({ item: @state.root_item, onClick: this.addItem, removeChild: this.removeItem, updatePosition:this.updateItemPosition })
+Canvas.CanvasContainer = React.createClass
+  render: ->
+    React.DOM.div
+      id: 'container'
+      children: [
+        Canvas.Sidebar()
+        Canvas.ItemsContainer()
+      ]
+React.renderComponent(Canvas.CanvasContainer(), document.body)

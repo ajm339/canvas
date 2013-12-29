@@ -1,0 +1,88 @@
+Canvas.SelectedItem = null
+Canvas.SelectedItemIndex = -1
+Canvas.Item = React.createClass
+  getInitialState: ->
+    if !@props.item then { left: 0, top: 0, currentlyDragging: null, draggingDiff: 0, isSelected: false, text: '' } else { left: @props.item.position_left, top: @props.item.position_top, currentlyDragging: null, draggingDiff: 0, isSelected: false, text: @props.item.text }
+  componentWillMount: ->
+    @setState({ left: @props.item.position_left, top: @props.item.position_top }) if @props.item
+    console.log('Will mount position: ' + @state.left + ',' + @state.top)
+    # Bind event handler to self
+    # https://groups.google.com/forum/#!topic/reactjs/WbKgCGD5zDE
+    window.addEventListener('mousemove', this.mouseMove, true)
+    window.addEventListener('mouseup', this.mouseUp, true)
+    window.addEventListener('keydown', this.keyDown, true)
+  componentWillUnmount: ->
+    window.removeEventListener('mousemove', this.mouseMove, true)
+    window.removeEventListener('mouseup', this.mouseUp, true)
+    window.removeEventListener('keydown', this.keyDown, true)
+  componentDidMount: (node) ->
+    return if !@props.isLast
+    # Need to focus on contents, not just element
+    # http://stackoverflow.com/a/3305469/472768
+    $(node).contents().focus()
+  beginDrag: (item) ->
+    mouseX = event.clientX - 200
+    itemX = @state.left
+    diff = mouseX - itemX
+    @setState({ currentlyDragging: item, draggingDiff: diff })
+  endDrag: (item) ->
+    @setState({ currentlyDragging: null, draggingDiff: 0 })
+  mouseMove: (event) ->
+    return if !@state.currentlyDragging
+    @setState({ left: event.clientX - 200 - @state.draggingDiff, top: event.clientY })
+  mouseUp: (event) ->
+    return if @state.currentlyDragging
+    @endDrag(@state.currentlyDragging)
+  deselect: ->
+    @setState({ isSelected: false })
+    Canvas.SelectedItem = null
+    Canvas.SelectedItemIndex = -1
+  select: ->
+    console.log('Select child: ' + @props.childIndex)
+    console.log('itemID: ' + @props.item.itemID)
+    Canvas.SelectedItem.deselect() if Canvas.SelectedItem
+    Canvas.SelectedItem = this
+    @setState({ isSelected: true })
+    Canvas.SelectedItemIndex = @props.childIndex
+  keyDown: (event) ->
+    # kc = event.nativeEvent.keyCode
+    # return if Canvas.SelectedItemIndex < 0
+    return if !@state.isSelected
+    kc = event.keyCode
+    console.log('kc: ' + kc)
+    # Check for backspace or delete
+    return if kc != 8 && kc != 46  # http://stackoverflow.com/a/2353562/472768
+    event.preventDefault()
+    console.log('childIndex: ' + @props.childIndex)
+    @props.removeChild(Canvas.SelectedItemIndex)
+    Canvas.SelectedItem = null
+    Canvas.SelectedItemIndex = -1
+    @setState({ isSelected: false })
+  render: ->
+    return React.DOM.div({}) if !@props.item  # AJAX hasn't loaded yet
+    children = []
+    if !@props.item.is_root  # Add drag handle if item isn't root
+      children = [
+        Canvas.DragHandle({ item:@props.item, beginDrag:this.beginDrag, endDrag:this.endDrag, select:this.select  })
+        # dot property can be accessed like a key-value array
+        Canvas[@props.item.latest_content.type]({ item: @props.item, text: @state.text })
+      ]
+    else
+      children = [
+        Canvas[@props.item.latest_content.type]({ item: @props.item, text: @state.text })
+      ]
+    
+    if @props.item.children
+      console.log('Item has children')
+      # Recursively render all children Items. API should set limit on depth of recursion
+      _t = this
+      `for (var i = 0; i < this.props.item.children.length; i++) {
+        is_last = (i === this.props.item.children.length - 1) ? true : false;
+        children.push(Canvas.Item({ item: this.props.item.children[i], onClick: _t.props.onClick, isLast: is_last, childIndex: i, removeChild: this.props.removeChild }));
+      }`
+    React.DOM.div
+      className: 'Item' + (if @props.item && @props.item.is_root then ' RootItem' else '') + (if @state.isSelected then ' Selected' else '')
+      'data-item-id': @props.item.id
+      style: { left: @state.left, top: @state.top}
+      onClick: @props.onClick
+      children: children
