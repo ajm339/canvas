@@ -2,7 +2,7 @@ window.Canvas or= {}
 Canvas.ItemCount = 0
 Canvas.ItemsContainer = React.createClass
   getInitialState: ->
-    $.get '/api/v1/user/root_item', (resp) =>
+    $.get '/api/v1/user/root_item?show_children=1', (resp) =>
       @setState({ root_item:resp })
     return { root_item: {} }
   render: ->

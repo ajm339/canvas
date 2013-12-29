@@ -22,6 +22,8 @@ Canvas.RootItem = React.createClass
     window.addEventListener('keydown', this.pressedKey, true)
   componentWillUnmount: ->
     window.removeEventListener('keydown', this.pressedKey, true)
+  componentWillReceiveProps: (nextProps) ->
+    @setState({ children: nextProps.item.children }) and console.log('item children: ' + nextProps.item.children) if nextProps.item && nextProps.item.children
   handleClick: (event) ->
     if @state.selectedIndex > -1 then @setState({ selectedIndex: -1 }) else this.addItem(event.clientX - 200, event.clientY)
   mouseUp: (event) ->
@@ -81,6 +83,7 @@ Canvas.RootItem = React.createClass
     event.preventDefault()  # Prevent backspace from navigating page
     this.removeSelectedItem()
   render: ->
+    console.log('Item render state children: ' + @state.children)
     cdn = []
     if @state.children
       cdn.push(Canvas.Item({ item: c, index: i, select: this.selectItemAtIndex, selected: (i == @state.selectedIndex), beginDrag: this.beginDraggingItemAtIndex })) for c, i in @state.children
