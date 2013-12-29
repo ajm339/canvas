@@ -124,5 +124,5 @@ Canvas.Note = React.createClass
       'data-version': @props.item.latest_content.version
       contentEditable: true
       # children: @props.text
-      children: @props.item.itemID + ': ' + @props.item.position_left + ',' + @props.item.position_top
+      children: ''
       onKeyUp: this.pressedKey
