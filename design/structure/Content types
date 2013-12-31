@@ -1,0 +1,63 @@
+Item
+position_top:integer
+position_left:integer
+item_id:integer #container id
+item_content_id:integer #for latest version
+
+ItemContent:
+user_id:integer #version creator
+version:integer
+item_id:integer
+type:string
+
+Note < ItemContent
+content:text
+
+MediaFile < ItemContent
+url:string
+
+Event < ItemContent
+name:string
+location:string
+starttime:datetime
+is_all_day:boolean
+endtime:datetime
+alert:integer
+
+Task < ItemContent
+is_checked:boolean
+name:string
+order:integer
+
+Message < ItemContent
+user_id:integer
+content:text
+
+
+
+Viewer
+user_id:integer
+item_id:integer
+
+
+
+Workspace:
+name:string
+
+Group:
+workspace_id:integer
+name:string
+
+Member:
+workspace_id:integer
+user_id:integer
+
+Groupie:
+group_id:integer
+user_id:integer
+
+Follower:
+user_id:integer
+item_id:integer
+is_owner:boolean
+can_edit:boolean

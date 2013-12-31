@@ -50,6 +50,12 @@ class User < ActiveRecord::Base
     # Update root_item_id field in DB without triggering after_save infinitely
     # By updating DB column directly
     self.update_column(:root_item_id, canvas.id)
+
+    w = Workspace.create(name: 'Personal')
+    m = Member.new
+    m.user = self
+    m.workspace = w
+    m.save
   end
 
   def display_name
@@ -76,11 +82,19 @@ class User < ActiveRecord::Base
   def all_visible_items
     return self.permissions.map(&:item)
   end
+
   def can_see_item_with_id?(item_id)
     perm = Permission.find_by_item_id_and_user_id(item_id, self.id)
     return perm.blank? ? false : perm.can_see
   end
   def can_see_item?(item)
-    return self.can_see_item_with_id(item.id)
+    return self.can_see_item_with_id?(item.id)
+  end
+  def can_edit_item_with_id?(item_id)
+    follower = Follower.find_by_user_id_and_item_id(self.id, item_id)
+    return follower.blank? ? false : follower.can_edit
+  end
+  def can_edit_item?(item)
+    return self.can_edit_item_with_id?(item.id)
   end
 end

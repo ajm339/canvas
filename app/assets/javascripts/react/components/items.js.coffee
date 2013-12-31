@@ -11,6 +11,40 @@ Canvas.DragHandle = React.createClass
       className: 'ItemDragHandle'
       onClick: @props.onClick
       onMouseDown: @props.onMouseDown
+Canvas.ItemAddButton = React.createClass
+  addItem: ->
+    @props.onAddItem(Canvas.ITEM_TYPES[@props.index])
+  render: ->
+    React.DOM.div
+      className: 'ItemAddButton'
+      'data-type': Canvas.ITEM_TYPES[@props.index]
+      children:
+        React.DOM.span
+          className: 'Icon'
+          children: window['ICON_' + Canvas.ITEM_TYPES[@props.index].toUpperCase()]
+          onClick: this.addItem
+Canvas.RootItemHeader = React.createClass
+  render: ->
+    React.DOM.div
+      className: 'RootItemHeader'
+      children: [
+        React.DOM.div
+          className: 'RootItemSearch'
+          children:
+            React.DOM.input
+              type: 'text'
+              placeholder: 'Search this canvas'
+        React.DOM.div
+          className: 'RootItemAdd'
+          children: [
+            React.DOM.p
+              className: 'RootItemAddPrompt'
+              children: 'Add item:'
+            React.DOM.div
+              className: 'RootItemAddButtons'
+              children: Canvas.ItemAddButton(index: num, onAddItem: @props.onAddItem) for num in [0...Canvas.ITEM_TYPES.length]
+          ]
+      ]
 Canvas.RootItem = React.createClass
   getInitialState: ->
     # TODO: Get root item here, rather than in ItemsContainer
@@ -23,8 +57,9 @@ Canvas.RootItem = React.createClass
   componentWillUnmount: ->
     window.removeEventListener('keydown', this.pressedKey, true)
   componentWillReceiveProps: (nextProps) ->
-    @setState({ children: nextProps.item.children }) and console.log('item children: ' + nextProps.item.children) if nextProps.item && nextProps.item.children
+    @setState({ children: nextProps.item.children }) if nextProps.item && nextProps.item.children
   handleClick: (event) ->
+    return if event.clientY < 52
     if @state.selectedIndex > -1 then @setState({ selectedIndex: -1 }) else this.addItem(event.clientX - 200, event.clientY)
   mouseUp: (event) ->
     i = @state.children[@state.dragIndex]
@@ -44,7 +79,29 @@ Canvas.RootItem = React.createClass
     c = @state.children
     c[@state.dragIndex] = i
     @setState({ children: c })
+  addItemOfType: (type) ->
+    return if type != 'Note'
+    # Default, blank note item size is 10x33
+    allItems = $('.RootItem').children('.Item')
+    minLeft = minTop = 1000000
+    for item in allItems
+      p = $(item).position()
+      minLeft = p.left if p.left < minLeft
+      minTop = p.top if p.top < minTop
+    console.log('minLeft: ' + minLeft + ',minTop: ' + minTop)
+    MIN_REQ_LEFT_OFFSET = 26  # 10px width + 8px margin on sides
+    MIN_REQ_TOP_OFFSET = 101   # 33px height + 8px margin on sides + 52px header
+    if minLeft >= MIN_REQ_LEFT_OFFSET || minTop >= MIN_REQ_TOP_OFFSET
+      this.addItem(8, 60)
+      return
+    # Just add to top left for now
+    this.addItem(8, 60)
+    # No space in top left, so calculate available loc
+    # closest to top left
+    # if minTop >= MIN_REQ_TOP_OFFSET
+    # else if minLeft >= MIN_REQ_LEFT_OFFSET
   addItem: (x, y) ->
+    console.log('Adding item at ' + x + ',' + y)
     child = {
       position_top: y
       position_left: x
@@ -90,7 +147,7 @@ Canvas.RootItem = React.createClass
     event.preventDefault()  # Prevent backspace from navigating page
     this.removeSelectedItem()
   render: ->
-    cdn = []
+    cdn = [Canvas.RootItemHeader({ onAddItem: this.addItemOfType })]
     if @state.children
       cdn.push(Canvas.Item({ item: c, index: i, select: this.selectItemAtIndex, selected: (i == @state.selectedIndex), beginDrag: this.beginDraggingItemAtIndex })) for c, i in @state.children
     React.DOM.div

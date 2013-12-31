@@ -14,12 +14,7 @@
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  position_top: 1
-  position_left: 1
-  item_content_id: 1
-
-two:
-  position_top: 1
-  position_left: 1
-  item_content_id: 1
+root_item:
+  position_top: 0
+  position_left: 0
+  is_root: true

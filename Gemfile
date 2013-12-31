@@ -55,10 +55,16 @@ gem 'rabl'
 # For LiveReload
 group :development do
   gem 'guard-livereload'
-  gem 'guard-rspec', '1.2.1'
+  gem 'guard-rspec'
   gem 'guard-spork', '1.2.0'
+  gem 'rspec-core'
 end
 
 group :development do
   gem 'annotate'
+end
+
+# Colored test output
+group :test do
+  gem 'turn'
 end

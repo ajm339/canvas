@@ -37,7 +37,6 @@ class UsersController < ApplicationController
     u.save
     cookies.delete :user_remember
     render json: { success: 1 }
-    puts '======== Logged out ========='
     return true
   end
 

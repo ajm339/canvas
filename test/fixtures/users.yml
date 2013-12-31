@@ -16,16 +16,11 @@
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  fname: MyString
-  lname: MyString
-  password: MyString
-  remember_token: MyString
-  password_digest: MyString
-
-two:
-  fname: MyString
-  lname: MyString
-  password: MyString
-  remember_token: MyString
-  password_digest: MyString
+feifan:
+  fname: 'Feifan'
+  lname: 'Zhou'
+  email: 'feifan@me.com'
+  password_digest: 'letmein'
+  # remember_token: 'rememberrememberthefifthofnovember'
+  password_digest: 'guttural'
+  is_guest: false
