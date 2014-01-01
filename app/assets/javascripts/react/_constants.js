@@ -9,3 +9,5 @@ var ICON_USER = '\ue807';
 var ICON_POWER = '\ue808';
 var ICON_NOTIFICATION = '\ue809';
 var ICON_SETTING = '\ue80A';
+var ICON_LEFT_ANGLE_ROUND = '\ue80B';
+var ICON_LEFT_ANGLE_SMALL = '\ue80C';

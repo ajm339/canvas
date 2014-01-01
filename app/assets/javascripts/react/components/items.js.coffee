@@ -2,10 +2,6 @@ window.Canvas or= {}
 Canvas.DragHandle = React.createClass
   getInitialState: ->
     return { isDragging: false, xOffset: 0 }
-  # mouseClick: ->
-  #   @props.select()
-  # mouseDown: ->
-  #   @props.beginDrag(@props.item)
   render: ->
     React.DOM.div
       className: 'ItemDragHandle'
@@ -160,8 +156,6 @@ Canvas.RootItem = React.createClass
       onMouseUp: this.mouseUp
       children: cdn
 Canvas.Item = React.createClass
-  # getInitialState: ->
-  #   return { left: @props.item.position_left, top: @props.item.position_top }
   didClickHandle: (event) ->
     event.stopPropagation()
     @props.select(@props.index)

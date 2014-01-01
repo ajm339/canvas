@@ -49,6 +49,80 @@ Canvas.SidebarFilter = React.createClass
           className: 'SidebarHorizontalList'
           id: 'filtersList'
           children: Canvas.SidebarFilterButton(index: num) for num in [0...Canvas.FILTER_TYPES.length]
+Canvas.WorkspaceList = React.createClass
+  getInitialState: ->
+    return { workspaces: [] }
+  componentWillMount: ->
+    $.get '/api/v1/user/workspaces', (resp) =>
+      @setState({ workspaces: resp })
+  selectWorkspace: (event) ->
+    e = event.nativeEvent
+    if (e.target) 
+      targ = e.target
+    else if (e.srcElement) 
+      targ = e.srcElement
+    if (targ.nodeType == 3)
+      targ = targ.parentNode;
+    workspaceID = $(targ).data('workspace-id') || $(targ).parent('.Workspace').data('workspace-id')
+    @props.onSelectWorkspace(workspaceID)
+  render: ->
+    workspaceList = []
+    if @state.workspaces
+      _t = this
+      workspaceList = @state.workspaces.map((wksp) ->
+        return React.DOM.li
+          className: 'Workspace'
+          'data-workspace-id': wksp.id
+          onClick: _t.selectWorkspace
+          children: 
+            React.DOM.h2
+              className: 'WorkspaceName',
+              children: wksp.name
+      )
+    workspaceList.push(
+      React.DOM.li
+        id: 'createWorkspacePrompt'
+        children: 'Create a workspace'
+    )
+    React.DOM.section
+      id: 'workspaces'
+      children: [
+        React.DOM.h1
+          id: 'workspacesHeader'
+          children: 'Workspaces'
+        React.DOM.ol
+          id: 'workspaceList'
+          children: workspaceList
+      ]
+Canvas.Workspace = React.createClass
+  getInitialState: ->
+    return { name: '' }
+  componentWillMount: ->
+    $.get ('/api/v1/user/workspaces/' + @props.id), (resp) =>
+      @setState(name: resp.name)
+  render: ->
+    React.DOM.section
+      id: 'currentWorkspace'
+      children: [
+        React.DOM.span
+          className: 'Icon'
+          id: 'workspaceBack'
+          onClick: @props.onBack
+          children: ICON_LEFT_ANGLE_ROUND;
+        React.DOM.h1
+          className: 'WorkspaceName'
+          children: @state.name
+        React.DOM.h1
+          className: 'SidebarPrompt'
+          children: 'Pinned items'
+        React.DOM.p
+          id: 'noPinnedItems'
+          children: 'No pinned items'
+        React.DOM.h1
+          className: 'SidebarPrompt'
+          children: 'Filter items'
+        Canvas.SidebarFilter()
+      ]
 
 Canvas.SidebarFooter = React.createClass
   logout: ->
@@ -73,23 +147,24 @@ Canvas.SidebarFooter = React.createClass
       ]
 
 Canvas.Sidebar = React.createClass
+  getInitialState: ->
+    return { workspaceID: getCookie('workspaceID') || -1 }
+  selectWorkspace: (id) ->
+    setCookie('workspaceID', id, 7300)
+    @setState(workspaceID: id)
+  showAllWorkspaces: ->
+    console.log('showAllWorkspaces')
+    setCookie('workspaceID', -1, 7300)
+    @setState(workspaceID: -1)
   render: ->
+    console.log('render sidebar')
+    children = [Canvas.SidebarProfile(), Canvas.SidebarSearch()]
+    if !getCookie('workspaceID') || getCookie('workspaceID') == '-1'
+      children.push(Canvas.WorkspaceList({ onSelectWorkspace: this.selectWorkspace }))
+    else
+      children.push(Canvas.Workspace({ id: getCookie('workspaceID'), onBack: this.showAllWorkspaces }))
+    children.push(Canvas.SidebarFooter())
     React.DOM.section 
       className: 'Sidebar',
       id: 'sidebar',
-      children: [
-        # Canvas.ItemAddList()
-        Canvas.SidebarProfile()
-        Canvas.SidebarSearch()
-        React.DOM.h1
-          className: 'SidebarPrompt'
-          children: 'Pinned items'
-        React.DOM.p
-          id: 'noPinnedItems'
-          children: 'No pinned items'
-        React.DOM.h1
-          className: 'SidebarPrompt'
-          children: 'Filter items'
-        Canvas.SidebarFilter()
-        Canvas.SidebarFooter()
-      ]
+      children: children
