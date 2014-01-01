@@ -26,6 +26,9 @@ class Item < ActiveRecord::Base
   has_many :inverse_items, through: :inverse_collections, source: :item
 
   validates :creator_id, presence: true
+  # validates :latest_content_id, presence: true
+  before_save { |i| i.position_top = 0 if i.position_top.nil? }
+  before_save { |i| i.position_left = 0 if i.position_left.nil? }
 
   def self.create_with_params_and_parent_for_user(item_params, parent_id, user_id)
     # Only for non-root items
@@ -34,7 +37,7 @@ class Item < ActiveRecord::Base
     n = Note.new
     n.user = User.find(user_id)
     n.version = 0
-    i = Item.new(is_root: false, position_top: item_params[:position_top], position_left: item_params[:position_left], creator_id: user_id)
+    i = Item.create(is_root: false, position_top: item_params[:position_top], position_left: item_params[:position_left], creator_id: user_id)
     n.item = i
     n.save  # TODO: Maybe i should be saved before n? Same in User.rb
     i.latest_content_id = n.id
