@@ -12,7 +12,7 @@ module Api
         respond_with Workspace.find(params[:id])
       end
       def create
-        w = Workspace.create(name: params[:workspace][:name])
+        w = Workspace.create_with_user_id(workspace_params, current_user.id)
         render json: { id: w.id }
       end
       def update
@@ -29,6 +29,10 @@ module Api
       private
       def valid_workspace?
         render json: { status: 404 } if Member.find_by_user_id_and_workspace_id(current_user.id, params[:workspace_id] || params[:id]).blank?
+      end
+
+      def workspace_params
+        params.require(:workspace).permit(:name)
       end
     end
   end

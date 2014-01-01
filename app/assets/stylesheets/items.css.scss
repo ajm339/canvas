@@ -92,6 +92,13 @@
       padding: 0;
       .Workspace {
         @extend .SidebarInset;
+        &:focus {
+          background: transparentize(white, 0.95);
+          outline: 1px solid $green;
+          &:hover {
+            cursor: auto;
+          }
+        }
         &:hover {
           cursor: pointer;
         }

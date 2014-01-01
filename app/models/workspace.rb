@@ -12,4 +12,10 @@ class Workspace < ActiveRecord::Base
   has_many :groups
   has_many :members
   has_many :users, through: :members
+
+  def self.create_with_user_id(workspace_params, user_id)
+    w = Workspace.create(workspace_params)
+    m = Member.create(workspace_id: w.id, user_id: user_id)
+    return w
+  end
 end

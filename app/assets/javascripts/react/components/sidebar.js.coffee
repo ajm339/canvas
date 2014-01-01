@@ -51,10 +51,13 @@ Canvas.SidebarFilter = React.createClass
           children: Canvas.SidebarFilterButton(index: num) for num in [0...Canvas.FILTER_TYPES.length]
 Canvas.WorkspaceList = React.createClass
   getInitialState: ->
-    return { workspaces: [] }
+    return { workspaces: [], isCreating: false }
   componentWillMount: ->
     $.get '/api/v1/user/workspaces', (resp) =>
       @setState({ workspaces: resp })
+  componentDidUpdate: ->
+    return if !@refs || !@refs.newWorkspace
+    @refs.newWorkspace.getDOMNode().focus()
   selectWorkspace: (event) ->
     e = event.nativeEvent
     if (e.target) 
@@ -65,6 +68,29 @@ Canvas.WorkspaceList = React.createClass
       targ = targ.parentNode;
     workspaceID = $(targ).data('workspace-id') || $(targ).parent('.Workspace').data('workspace-id')
     @props.onSelectWorkspace(workspaceID)
+  createWorkspace: ->
+    @setState(isCreating: true)
+  keyDown: (event) ->
+    return if !@state.isCreating || !@refs.newWorkspace
+    nwkps = @refs.newWorkspace
+    kc = if event.nativeEvent then event.nativeEvent.keyCode else event.keyCode
+    return if kc != 13  # Return key
+    workspace = {
+      name: $(@refs.newWorkspace.getDOMNode()).text()
+    }
+    $.post '/api/v1/user/workspaces',
+      workspace: workspace
+      (resp) =>
+        wksps = @state.workspaces
+        lastWksp = wksps[wksps.length - 1]
+        lastWksp.id = resp.id
+        wksps[wksps.length - 1] = lastWksp
+        @setState(workspaces: wksps)
+    event.preventDefault()
+    workspace.name = '' # Fix display issue with double lines
+    wksps = @state.workspaces
+    wksps.push(workspace)
+    @setState({ workspaces: wksps, isCreating: false })
   render: ->
     workspaceList = []
     if @state.workspaces
@@ -79,11 +105,22 @@ Canvas.WorkspaceList = React.createClass
               className: 'WorkspaceName',
               children: wksp.name
       )
-    workspaceList.push(
-      React.DOM.li
-        id: 'createWorkspacePrompt'
-        children: 'Create a workspace'
-    )
+    if @state.isCreating
+      console.log('adding ref')
+      workspaceList.push(
+        React.DOM.li
+          className: 'Workspace'
+          contentEditable: true
+          ref: 'newWorkspace'
+          onKeyDown: this.keyDown
+      )
+    else
+      workspaceList.push(
+        React.DOM.li
+          id: 'createWorkspacePrompt'
+          onClick: this.createWorkspace
+          children: 'Create a workspace'
+      )
     React.DOM.section
       id: 'workspaces'
       children: [
@@ -153,11 +190,9 @@ Canvas.Sidebar = React.createClass
     setCookie('workspaceID', id, 7300)
     @setState(workspaceID: id)
   showAllWorkspaces: ->
-    console.log('showAllWorkspaces')
     setCookie('workspaceID', -1, 7300)
     @setState(workspaceID: -1)
   render: ->
-    console.log('render sidebar')
     children = [Canvas.SidebarProfile(), Canvas.SidebarSearch()]
     if !getCookie('workspaceID') || getCookie('workspaceID') == '-1'
       children.push(Canvas.WorkspaceList({ onSelectWorkspace: this.selectWorkspace }))
