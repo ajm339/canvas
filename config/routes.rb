@@ -14,6 +14,7 @@ Canvas::Application.routes.draw do
         get '/root_item', to: 'items#root', as: :user_root_item
         get '/root_item/versions', to: 'versions#root', as: :user_root_item_versions
         get '/root_item/versions/:id', to: 'versions#show', as: :user_root_item_version
+        resources :workspaces
       end
     end
   end
