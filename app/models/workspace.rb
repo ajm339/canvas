@@ -18,4 +18,8 @@ class Workspace < ActiveRecord::Base
     m = Member.create(workspace_id: w.id, user_id: user_id)
     return w
   end
+
+  def as_json(options={})
+    super.merge(members: self.users.map(&:display_json))
+  end
 end

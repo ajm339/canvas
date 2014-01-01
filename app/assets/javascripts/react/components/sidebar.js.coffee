@@ -133,11 +133,19 @@ Canvas.WorkspaceList = React.createClass
       ]
 Canvas.Workspace = React.createClass
   getInitialState: ->
-    return { name: '' }
+    return { name: '', members: [] }
   componentWillMount: ->
     $.get ('/api/v1/user/workspaces/' + @props.id), (resp) =>
-      @setState(name: resp.name)
+      @setState(name: resp.name, members: resp.members)
   render: ->
+    members = @state.members.map((m) ->
+      name = m.name.split(' ')
+      initials = name[0].slice(0,1) + name[1].slice(0,1)
+      return (React.DOM.div
+        className: 'SidebarProfilePicture Small WorkspaceMemberProfilePicture'
+        children: initials
+      )
+    )
     React.DOM.section
       id: 'currentWorkspace'
       children: [
@@ -149,6 +157,12 @@ Canvas.Workspace = React.createClass
         React.DOM.h1
           className: 'WorkspaceName'
           children: @state.name
+        React.DOM.h1
+          className: 'SidebarPrompt'
+          children: 'Members'
+        React.DOM.div
+          className: 'WorkspaceMembers'
+          children: members
         React.DOM.h1
           className: 'SidebarPrompt'
           children: 'Pinned items'

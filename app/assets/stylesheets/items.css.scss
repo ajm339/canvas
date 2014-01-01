@@ -39,20 +39,26 @@
     left: -100%;
     z-index: -1;
   }
+  .SidebarProfilePicture {
+    background: $green;
+    border-radius: 15px;
+    color: transparentize(white, 0.15);
+    display: inline-block;
+    font-size: 16px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    vertical-align: middle;
+    width: 30px;
+    &.Small {
+      font-size: 11px;
+      height: 20px;
+      line-height: 20px;
+      width: 20px;
+    }
+  }
   .SidebarProfile {
     margin: 14px 6px 6px 6px;
-    .SidebarProfilePicture {
-      background: $green;
-      border-radius: 15px;
-      color: transparentize(white, 0.15);
-      display: inline-block;
-      font-size: 16px;
-      height: 30px;
-      line-height: 30px;
-      text-align: center;
-      vertical-align: middle;
-      width: 30px;
-    }
     .SidebarProfileName {
       color: white;
       display: inline-block;
@@ -135,6 +141,13 @@
     }
     .WorkspaceName {
       @extend .WorkspaceHeader;
+    }
+    .WorkspaceMembers {
+      padding: 0 3px;
+      .WorkspaceMemberProfilePicture {
+        display: inline-block;
+        margin: 3px;
+      }
     }
     #noPinnedItems {
       color: white;
