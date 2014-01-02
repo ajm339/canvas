@@ -23,6 +23,8 @@ Canvas::Application.routes.draw do
   resources :users
   get '/login', to: 'session#new', as: :login
   post '/login', to: 'users#login', as: :save_login
+  get '/join', to: 'users#join', as: :join
+  post '/join', to: 'users#accept', as: :accept_invite
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'

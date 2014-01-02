@@ -1,0 +1,21 @@
+<% provide(:title, 'Welcome to Canvas &mdash; Accept your invite and create an account'.html_safe) %>
+<div class='AbsoluteCenter' id='invite_signup'>
+  <div class='Panel' id='signup'>
+    <%= form_for User.new, url: '/join' do |u| %>
+      <%= u.hidden_field :should_log_in, value: true %>
+      <%= u.hidden_field :is_guest, value: false %>
+      <!-- User might specify another email when registering -->
+      <%= hidden_field_tag :target_email, @invite.target_email %>
+      <%= hidden_field_tag :code, @invite.code %>
+      <div id='newUserName'>
+      <%= u.text_field :fname, placeholder: 'First name', value: @invite.target_fname %>
+      <%= u.text_field :lname, placeholder: 'Last name', value: @invite.target_lname %>
+      </div>
+      <%= u.email_field :email, placeholder: 'Email', value: @invite.target_email %>
+      <br />
+      <%= u.password_field :password, placeholder: 'Password' %>
+      <br />
+      <%= u.submit 'Create account', id: 'submit_new_user' %>
+    <% end %>
+  </div>
+</div>
