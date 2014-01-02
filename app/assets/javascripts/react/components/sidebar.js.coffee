@@ -139,6 +139,7 @@ Canvas.Workspace = React.createClass
       @setState(name: resp.name, members: resp.members.concat(resp.invites))
   addMember: (event) ->
     event.preventDefault()
+    # TODO: Don't create/add/send invite if email already exists
     form = @refs.addMemberForm.getDOMNode()
     fname = $(form).children('#invite_fname').val()
     lname = $(form).children('#invite_lname').val()

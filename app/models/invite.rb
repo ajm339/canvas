@@ -19,7 +19,7 @@ class Invite < ActiveRecord::Base
   belongs_to :workspace
 
   def invite
-    # TODO: Send invite via email
+    InviteMailer.invite_email(self).deliver
   end
 
   def display_json

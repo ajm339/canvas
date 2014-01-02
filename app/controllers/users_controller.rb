@@ -26,6 +26,8 @@ class UsersController < ApplicationController
     i = Invite.find_by_target_email_and_code(params[:target_email], params[:code])
     invite_success = (i.blank?) ? 0 : 1
     Member.create(user_id: u.id, workspace_id: i.workspace.id) if !i.blank?
+    i.accept = true
+    i.save
     login_success = (params[:user][:should_log_in] && save_login(u)) ? 1 : 0
     if user_success && login_success
       redirect_to root_path

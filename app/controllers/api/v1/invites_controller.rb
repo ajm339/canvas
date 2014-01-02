@@ -6,14 +6,18 @@ module Api
       respond_to :json
 
       def create
-        i = Invite.new(invite_params)
-        i.accepted = false
-        i.code = SecureRandom.urlsafe_base64
-        i.user = current_user
-        i.workspace = Workspace.find(cookies[:workspaceID])
-        i.save
-        i.invite
-        render json: { success: 1 }
+        success = 0
+        if User.find_by_email(invite_params[:email]).blank?
+          i = Invite.new(invite_params)
+          i.accepted = false
+          i.code = SecureRandom.urlsafe_base64
+          i.user = current_user
+          i.workspace = Workspace.find(cookies[:workspaceID])
+          i.save
+          i.invite
+          success = 1
+        end
+        render json: { success: success }
       end
 
       private
