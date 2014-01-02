@@ -12,6 +12,7 @@ class Workspace < ActiveRecord::Base
   has_many :groups
   has_many :members
   has_many :users, through: :members
+  has_many :invites
 
   def self.create_with_user_id(workspace_params, user_id)
     w = Workspace.create(workspace_params)
@@ -20,6 +21,6 @@ class Workspace < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super.merge(members: self.users.map(&:display_json))
+    super.merge(members: self.users.map(&:display_json), invites: self.invites.map(&:display_json))
   end
 end

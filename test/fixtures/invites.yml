@@ -1,0 +1,33 @@
+# == Schema Information
+#
+# Table name: invites
+#
+#  id           :integer          not null, primary key
+#  user_id      :integer
+#  target_fname :string(255)
+#  target_lname :string(255)
+#  target_email :string(255)
+#  accepted     :boolean
+#  code         :string(255)
+#  created_at   :datetime
+#  updated_at   :datetime
+#  workspace_id :integer
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 1
+  target_fname: MyString
+  target_lname: MyString
+  target_email: MyString
+  accepted: false
+  code: MyString
+
+two:
+  user_id: 1
+  target_fname: MyString
+  target_lname: MyString
+  target_email: MyString
+  accepted: false
+  code: MyString

@@ -51,6 +51,7 @@
     vertical-align: middle;
     width: 30px;
     &.Small {
+      border-radius: 10px;
       font-size: 11px;
       height: 20px;
       line-height: 20px;
@@ -145,8 +146,51 @@
     .WorkspaceMembers {
       padding: 0 3px;
       .WorkspaceMemberProfilePicture {
+        background: lighten($green, 40%);
+        color: #666;
         display: inline-block;
         margin: 3px;
+        vertical-align: middle;
+        &.Inactive {
+          opacity: 0.65;
+        }
+      }
+      .AddWorkspaceMember {
+        @extend .SidebarProfilePicture.Small;
+        background: lighten($green, 30%);
+        color: $green;
+        display: inline-block;
+        font-size: 11px;
+        text-align: center;
+        @include vendor-prefix(transition, "background 0.25s, color 0.25s");
+        vertical-align: middle;
+        &:hover {
+          background: $green;
+          color: white;
+          cursor: pointer;
+        }
+      }
+    }
+    #inviteMembers {
+      display: none;
+      #addWorkspaceMemberPrompt {
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 6px;
+      }
+      #addWorkspaceMember {
+        margin: 6px;
+        #invite_fname, #invite_lname {
+          display: inline-block;
+          width: 92px;
+        }
+        #invite_fname {
+          margin-right: 3px;
+        }
+        #invite_email, #invite_button {
+          width: 100%;
+        }
       }
     }
     #noPinnedItems {

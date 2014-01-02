@@ -26,6 +26,7 @@ class User < ActiveRecord::Base
   has_many :permissions # Items the user can see
   has_many :items, through: :permissions
   has_many :item_contents
+  has_many :invites
 
   validates :fname, presence: true, length: { maximum: 50 }
   validates :lname, presence: true, length: { maximum: 50 }

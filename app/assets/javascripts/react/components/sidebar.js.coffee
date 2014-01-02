@@ -136,15 +136,48 @@ Canvas.Workspace = React.createClass
     return { name: '', members: [] }
   componentWillMount: ->
     $.get ('/api/v1/user/workspaces/' + @props.id), (resp) =>
-      @setState(name: resp.name, members: resp.members)
+      @setState(name: resp.name, members: resp.members.concat(resp.invites))
+  addMember: (event) ->
+    event.preventDefault()
+    form = @refs.addMemberForm.getDOMNode()
+    fname = $(form).children('#invite_fname').val()
+    lname = $(form).children('#invite_lname').val()
+    email = $(form).children('#invite_email').val()
+    invite = {
+      target_fname: fname
+      target_lname: lname
+      target_email: email
+    }
+    $.post '/api/v1/user/invite',
+      invite: invite
+    member = { id: -1, name: fname + ' ' + lname }
+    members = @state.members
+    members.push(member)
+    @setState({ members: members })
+    $(form).children('#invite_fname').val('')
+    $(form).children('#invite_lname').val('')
+    $(form).children('#invite_email').val('')
+  showInviteBlock: ->
+    $('#inviteMembers').slideDown()
   render: ->
     members = @state.members.map((m) ->
       name = m.name.split(' ')
       initials = name[0].slice(0,1) + name[1].slice(0,1)
+      c = 'SidebarProfilePicture Small WorkspaceMemberProfilePicture'
+      c = c + ' Inactive' if m.id < 0
       return (React.DOM.div
-        className: 'SidebarProfilePicture Small WorkspaceMemberProfilePicture'
+        className: c
         children: initials
       )
+    )
+    members.push(
+      React.DOM.div
+        className: 'AddWorkspaceMember'
+        onClick: this.showInviteBlock
+        children: 
+          React.DOM.span
+            className: 'Icon'
+            children: ICON_PLUS
     )
     React.DOM.section
       id: 'currentWorkspace'
@@ -163,6 +196,45 @@ Canvas.Workspace = React.createClass
         React.DOM.div
           className: 'WorkspaceMembers'
           children: members
+        React.DOM.div
+          id: 'inviteMembers'
+          children: [
+            React.DOM.p
+              id: 'addWorkspaceMemberPrompt'
+              children: ('Add member to ' + @state.name)
+            React.DOM.form
+              ref: 'addMemberForm'
+              id: 'addWorkspaceMember'
+              onSubmit: this.addMember
+              children: [
+                React.DOM.input
+                  className: 'Small'
+                  type: 'text'
+                  placeholder: 'First name'
+                  required: true
+                  name: 'invite[fname]'
+                  id: 'invite_fname'
+                React.DOM.input
+                  className: 'Small'
+                  type: 'text'
+                  placeholder: 'Last name'
+                  required: true
+                  name: 'invite[lname]'
+                  id: 'invite_lname'
+                React.DOM.input
+                  className: 'Small'
+                  type: 'email'
+                  placeholder: 'Email address'
+                  required: true
+                  name: 'invite[email]'
+                  id: 'invite_email'
+                React.DOM.input
+                  className: 'Small'
+                  type: 'submit'
+                  id: 'invite_button'
+                  value: 'Invite'
+              ]
+          ]
         React.DOM.h1
           className: 'SidebarPrompt'
           children: 'Pinned items'

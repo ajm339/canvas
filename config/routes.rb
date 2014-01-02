@@ -15,6 +15,7 @@ Canvas::Application.routes.draw do
         get '/root_item/versions', to: 'versions#root', as: :user_root_item_versions
         get '/root_item/versions/:id', to: 'versions#show', as: :user_root_item_version
         resources :workspaces
+        post '/invite', to: 'invites#create', as: :send_invite
       end
     end
   end

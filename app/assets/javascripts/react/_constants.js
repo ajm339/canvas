@@ -11,3 +11,5 @@ var ICON_NOTIFICATION = '\ue809';
 var ICON_SETTING = '\ue80A';
 var ICON_LEFT_ANGLE_ROUND = '\ue80B';
 var ICON_LEFT_ANGLE_SMALL = '\ue80C';
+var ICON_PLUS = '\ue80D';
+var ICON_TRASH = '\ue80E';
