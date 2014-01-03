@@ -11,8 +11,8 @@
 
 <%= yield %>
 
-<%= javascript_include_tag "application", "data-turbolinks-track" => true %>
-<%= javascript_include_tag controller.controller_name, "data-turbolinks-track" => true %>
+<%= javascript_include_tag "application" %>
+<%= javascript_include_tag controller.controller_name %>
 <% if content_for? :additional_javascript %>
   <%= javascript_include_tag yield(:additional_javascript), "data-turbolinks-track" => true %>
 <% end %>

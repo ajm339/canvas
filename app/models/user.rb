@@ -71,7 +71,7 @@ class User < ActiveRecord::Base
     super(except: [:password_digest]).merge({ display_name: self.display_name })
   end
   def display_json
-    return { id: self.id, name: self.display_name }
+    return { id: self.id, name: self.display_name, email: self.email }
   end
 
   def followed_items

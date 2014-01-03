@@ -258,6 +258,15 @@
     }
   }
 }
+.ProfileImage {
+  border-radius: 10px;
+  display: inline-block;
+  font-size: 13px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  width: 20px;
+}
 #items {
   bottom: 0;
   box-shadow: -1px 0 2px 1px transparentize(black, 0.75);
@@ -351,10 +360,10 @@
     bottom: 0;
     // padding: 12px;
     position: absolute;
-    right: -208px;
+    right: -228px;
     top: 52px;
     @include vendor-prefix(transition, right 0.15s);
-    width: 180px;
+    width: 200px;
     &.Active {
       right: 0px;
     }
@@ -366,15 +375,77 @@
     }
     .ItemFollowersGroup {
       padding: 0 12px;
-      .MemberProfile {
+      .FollowerProfile, .AddFollower {
+        @extend .ProfileImage;
+      }
+      .FollowerProfile {
         background-color: $green;
         color: white;
-        border-radius: 10px;
-        font-size: 13px;
-        height: 20px;
-        line-height: 20px;
-        text-align: center;
-        width: 20px;
+      }
+      .AddFollower {
+        @extend .MemberProfile;
+        color: $green;
+        @include vendor-prefix(transition, "background 0.25s, color 0.25s");
+        &:hover {
+          background: $green;
+          color: white;
+          cursor: pointer;
+        }
+      }
+    }
+    .MemberSelect {
+      padding: 6px;
+      input[type='text'] {
+        width: 100%;
+      }
+      .MemberSelectList {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        .MemberSelectItem {
+          padding: 4px 0;
+          &:hover {
+            background: $green;
+            color: white;
+            cursor: pointer;
+            .MemberEmail {
+              color: #DDD !important;
+            }
+          }
+          .ProfileImage {
+            @extend .MemberProfile;
+            @extend .ProfileImage;
+            display: inline-block;
+          }
+          .MemberText {
+            display: inline-block;
+            margin-left: 4px;
+            vertical-align: middle;
+            .MemberName {
+              font-size: 12px;
+              margin: 2px 0;
+            }
+            .MemberEmail {
+              color: #666;
+              font-size: 11px;
+              margin: 0;
+            }
+          }
+        }
+      }
+    }
+    .DeleteItem {
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      right: 0;
+      text-align: center;
+      .Icon {
+        @include vendor-prefix(transition, color 0.25s);
+        &:hover {
+          color: #666;
+          cursor: pointer;
+        }
       }
     }
   }

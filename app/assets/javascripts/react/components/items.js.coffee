@@ -42,6 +42,71 @@ Canvas.RootItemHeader = React.createClass
           ]
       ]
 
+Canvas.MemberSelect = React.createClass
+  getInitialState: ->
+    return { filteredMembers: [], allMembers: [] }
+  componentWillMount: ->
+    $.get '/api/v1/user/workspaces/' + getCookie('workspaceID'), (resp) =>
+      @setState(filteredMembers: resp.members, allMembers: resp.members)
+  filterChanged: (event) ->
+    searchText = $(event.target).val()
+    members = @state.allMembers
+    filtered = []
+    for m in members
+      names = m.name.split(' ')
+      fname = names[0]
+      lname = names[1]
+      email = m.email
+      if fname.indexOf(searchText) >= 0 || lname.indexOf(searchText) >= 0 || email.indexOf(searchText) >= 0 || m.name.indexOf(searchText) >= 0
+        filtered.push(m)
+    @setState(filteredMembers: filtered)
+  keyDown: (event) ->
+    kc = if event.nativeEvent then event.nativeEvent.keyCode else event.keyCode
+    event.stopPropagation() if kc == 8 || kc == 46
+  render: ->
+    _t = this
+    membersList = @state.filteredMembers.map((member) ->
+      isFollower = false
+      _t.props.followers.map((follower) ->
+        isFollower = true if follower.id == member.id
+      )
+      return if isFollower
+      name = member.name.split(' ')
+      initials = name[0].slice(0,1) + name[1].slice(0,1)
+      return (
+        React.DOM.li
+          className: 'MemberSelectItem'
+          children: [
+            React.DOM.div
+              className: 'ProfileImage Small'
+              children: initials
+            React.DOM.div
+              className: 'MemberText'
+              children: [
+                React.DOM.h2
+                  className: 'MemberName'
+                  children: member.name
+                React.DOM.p
+                  className: 'MemberEmail'
+                  children: member.email
+              ]
+          ]
+      )
+    )
+    React.DOM.div
+      className: 'MemberSelect'
+      children: [
+        React.DOM.input
+          className: 'Small'
+          type: 'text'
+          placeholder: 'Find by name or email'
+          onKeyUp: this.filterChanged
+          onKeyDown: this.keyDown
+        React.DOM.ul
+          className: 'MemberSelectList'
+          children: membersList
+      ]
+
 Canvas.NoteDetails = React.createClass
   render: ->
     React.DOM.div
@@ -54,11 +119,20 @@ Canvas.ItemFollowers = React.createClass
   render: ->
     followers = @props.followers.map((f) ->
       initials = f.fname.slice(0,1) + f.lname.slice(0,1)
-      c = 'Small MemberProfile'
+      c = 'Small FollowerProfile'
       return (React.DOM.div
         className: c
         children: initials
       )
+    )
+    followers.push(
+      React.DOM.div
+        className: 'AddFollower'
+        # onClick: this.addFollower
+        children: 
+          React.DOM.span
+            className: 'Icon'
+            children: ICON_PLUS
     )
     React.DOM.div
       className: 'ItemFollowers'
@@ -73,15 +147,29 @@ Canvas.ItemFollowers = React.createClass
 Canvas.ItemDetails = React.createClass
   getInitialState: ->
     return { followers: [] }
-  componentWillReceiveProps: ->
+  componentWillMount: ->
+    # TODO: Causing 'Uncaught Error: Invariant Violation: replaceState(...): Can only update a mounted or mounting component.' error on first load
     $.get '/api/v1/user/items/17/followers', (resp) =>
       @setState(followers: resp)
+  click: (event) ->
+    event.stopPropagation()
   render: ->
     children = []
     children.push(Canvas[@props.item.latest_content.type + 'Details'](item: @props.item)) if @props.item
     children.push(Canvas.ItemFollowers(followers: @state.followers))
+    children.push(Canvas.MemberSelect(followers: @state.followers))
+    children.push(
+      React.DOM.div
+        className: 'Inset DeleteItem'
+        children:
+          React.DOM.span
+            className: 'Icon'
+            onClick: @props.onRemove
+            children: ICON_TRASH
+    )
     React.DOM.section
       className: 'ItemDetails' + (if @props.item then ' ' + @props.item.latest_content.type + 'Details Active' else '')
+      onClick: this.click
       children: children
 Canvas.RootItem = React.createClass
   getInitialState: ->
@@ -177,18 +265,21 @@ Canvas.RootItem = React.createClass
     itemX = i.position_left
     diff = dragX - itemX
     @setState({ dragIndex: index, dragDiff: diff })
-  pressedKey: (event) ->
-    return if @state.selectedIndex < 0
-    kc = if event.nativeEvent then event.nativeEvent.keyCode else event.keyCode
-    return if kc != 8 && kc != 46  # http://stackoverflow.com/a/2353562/472768
-    event.preventDefault()  # Prevent backspace from navigating page
-    this.removeSelectedItem()
+  # pressedKey: (event) ->
+  #   return if @state.selectedIndex < 0
+  #   kc = if event.nativeEvent then event.nativeEvent.keyCode else event.keyCode
+  #   return if kc != 8 && kc != 46  # http://stackoverflow.com/a/2353562/472768
+  #   if document.activeElement # Editing some text field
+  #     event.stopPropagation()
+  #   else
+  #     event.preventDefault()
+  #     this.removeSelectedItem()
   render: ->
     cdn = [Canvas.RootItemHeader({ onAddItem: this.addItemOfType })]
     if @state.children
       cdn.push(Canvas.Item({ item: c, index: i, select: this.selectItemAtIndex, selected: (i == @state.selectedIndex), beginDrag: this.beginDraggingItemAtIndex })) for c, i in @state.children
     if @state.selectedIndex < 0 then selectedItem = null else selectedItem = @state.children[@state.selectedIndex]
-    cdn.push(Canvas.ItemDetails({ item: selectedItem }))
+    cdn.push(Canvas.ItemDetails({ item: selectedItem, onRemove: this.removeSelectedItem }))
     React.DOM.div
       className: 'Item RootItem'
       'data-item-id': @props.item.id
