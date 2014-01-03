@@ -60,6 +60,10 @@ class Item < ActiveRecord::Base
     return self.inverse_items.to_a
   end
 
+  def following_users
+    return self.users.to_a
+  end
+
   def as_json(options = {})
     return super(options).merge({ latest_content: self.latest_content })
   end

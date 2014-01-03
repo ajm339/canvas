@@ -11,6 +11,21 @@
     font-weight: 400;
   }
 }
+.Inset {
+  background: transparentize(black, 0.95);
+  box-shadow: inset 0 1px 2px transparentize(black, 0.75);
+  color: #BBB;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px;
+}
+.MemberProfile {
+  background: lighten($green, 40%);
+  color: #666;
+  display: inline-block;
+  margin: 3px;
+  vertical-align: middle;
+}
 #sidebar {
   border-right: 1px solid transparentize(black, 0.35);
   bottom: 0;
@@ -76,12 +91,8 @@
     }
   }
   .SidebarInset {
-    background: darken($sidebar-base, 10%);
-    box-shadow: inset 0 1px 2px transparentize(black, 0.75);
-    color: #BBB;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 10px;
+    // background: darken($sidebar-base, 10%);
+    @extend .Inset;
   }
   .WorkspaceHeader {
     color: white;
@@ -146,11 +157,7 @@
     .WorkspaceMembers {
       padding: 0 3px;
       .WorkspaceMemberProfilePicture {
-        background: lighten($green, 40%);
-        color: #666;
-        display: inline-block;
-        margin: 3px;
-        vertical-align: middle;
+        @extend .MemberProfile;
         &.Inactive {
           opacity: 0.65;
         }
@@ -335,6 +342,39 @@
       &:hover {
         border: 1px solid transparentize(black, 0.75);
         border-top: none;
+      }
+    }
+  }
+  .ItemDetails {
+    background: transparentize(white, 0.25);
+    border-left: 4px solid $green;
+    bottom: 0;
+    // padding: 12px;
+    position: absolute;
+    right: -208px;
+    top: 52px;
+    @include vendor-prefix(transition, right 0.15s);
+    width: 180px;
+    &.Active {
+      right: 0px;
+    }
+    .NoteDetails {
+      padding: 12px;
+      p {
+        margin: 0;
+      }
+    }
+    .ItemFollowersGroup {
+      padding: 0 12px;
+      .MemberProfile {
+        background-color: $green;
+        color: white;
+        border-radius: 10px;
+        font-size: 13px;
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        width: 20px;
       }
     }
   }

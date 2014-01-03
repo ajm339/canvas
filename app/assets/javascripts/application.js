@@ -19,5 +19,5 @@
 //= require backbone_rails_sync
 //= require backbone_datalink
 //= require backbone/canvas
-//= require react.min
+//= require react.full
 // require_tree .

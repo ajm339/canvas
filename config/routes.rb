@@ -10,6 +10,7 @@ Canvas::Application.routes.draw do
       resource :user do
         resources :items do
           resources :versions
+          resources :followers
         end
         get '/root_item', to: 'items#root', as: :user_root_item
         get '/root_item/versions', to: 'versions#root', as: :user_root_item_versions

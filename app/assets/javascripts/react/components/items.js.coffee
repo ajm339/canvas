@@ -41,6 +41,48 @@ Canvas.RootItemHeader = React.createClass
               children: Canvas.ItemAddButton(index: num, onAddItem: @props.onAddItem) for num in [0...Canvas.ITEM_TYPES.length]
           ]
       ]
+
+Canvas.NoteDetails = React.createClass
+  render: ->
+    React.DOM.div
+      className: 'NoteDetails'
+      children: [
+        React.DOM.p
+          children: 'Note created on ' + @props.item.created_at
+      ]
+Canvas.ItemFollowers = React.createClass
+  render: ->
+    followers = @props.followers.map((f) ->
+      initials = f.fname.slice(0,1) + f.lname.slice(0,1)
+      c = 'Small MemberProfile'
+      return (React.DOM.div
+        className: c
+        children: initials
+      )
+    )
+    React.DOM.div
+      className: 'ItemFollowers'
+      children: [
+        React.DOM.h1
+          className: 'Inset'
+          children: 'Followers'
+        React.DOM.div
+          className: 'ItemFollowersGroup'
+          children: followers
+      ]
+Canvas.ItemDetails = React.createClass
+  getInitialState: ->
+    return { followers: [] }
+  componentWillReceiveProps: ->
+    $.get '/api/v1/user/items/17/followers', (resp) =>
+      @setState(followers: resp)
+  render: ->
+    children = []
+    children.push(Canvas[@props.item.latest_content.type + 'Details'](item: @props.item)) if @props.item
+    children.push(Canvas.ItemFollowers(followers: @state.followers))
+    React.DOM.section
+      className: 'ItemDetails' + (if @props.item then ' ' + @props.item.latest_content.type + 'Details Active' else '')
+      children: children
 Canvas.RootItem = React.createClass
   getInitialState: ->
     # TODO: Get root item here, rather than in ItemsContainer
@@ -97,7 +139,6 @@ Canvas.RootItem = React.createClass
     # if minTop >= MIN_REQ_TOP_OFFSET
     # else if minLeft >= MIN_REQ_LEFT_OFFSET
   addItem: (x, y) ->
-    console.log('Adding item at ' + x + ',' + y)
     child = {
       position_top: y
       position_left: x
@@ -146,6 +187,8 @@ Canvas.RootItem = React.createClass
     cdn = [Canvas.RootItemHeader({ onAddItem: this.addItemOfType })]
     if @state.children
       cdn.push(Canvas.Item({ item: c, index: i, select: this.selectItemAtIndex, selected: (i == @state.selectedIndex), beginDrag: this.beginDraggingItemAtIndex })) for c, i in @state.children
+    if @state.selectedIndex < 0 then selectedItem = null else selectedItem = @state.children[@state.selectedIndex]
+    cdn.push(Canvas.ItemDetails({ item: selectedItem }))
     React.DOM.div
       className: 'Item RootItem'
       'data-item-id': @props.item.id
