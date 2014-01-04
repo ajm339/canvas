@@ -44,7 +44,7 @@ Canvas.RootItemHeader = React.createClass
 
 Canvas.MemberSelect = React.createClass
   getInitialState: ->
-    return { filteredMembers: [], allMembers: [] }
+    return { filteredMembers: [], allMembers: [], selectedIndex: -1 }
   componentWillMount: ->
     $.get '/api/v1/user/workspaces/' + getCookie('workspaceID'), (resp) =>
       @setState(filteredMembers: resp.members, allMembers: resp.members)
@@ -53,7 +53,7 @@ Canvas.MemberSelect = React.createClass
     members = @state.allMembers
     filtered = []
     for m in members
-      names = m.name.split(' ')
+      names = m.display_name.split(' ')
       fname = names[0]
       lname = names[1]
       email = m.email
@@ -63,19 +63,35 @@ Canvas.MemberSelect = React.createClass
   keyDown: (event) ->
     kc = if event.nativeEvent then event.nativeEvent.keyCode else event.keyCode
     event.stopPropagation() if kc == 8 || kc == 46
+    index = @state.selectedIndex
+    if kc == 40 # Down arrow
+      index++ if @state.selectedIndex < (@state.filteredMembers.length - 1)
+    else if kc == 38  # Up arrow
+      index-- if @state.selectedIndex > 0
+    else if kc == 13  # Return
+      @props.onAddFollower(@state.filteredMembers[@state.selectedIndex].id) if @state.selectedIndex >= 0
+    @setState(selectedIndex: index)
+  selectMember: (event) ->
+    index = $(event.target).data('index') || $(event.target).parent('.MemberSelectItem').data('index')
+    @props.onAddFollower(@state.filteredMembers[index].id)
   render: ->
     _t = this
+    index = 0
     membersList = @state.filteredMembers.map((member) ->
       isFollower = false
       _t.props.followers.map((follower) ->
         isFollower = true if follower.id == member.id
       )
-      return if isFollower
-      name = member.name.split(' ')
+      name = member.display_name.split(' ')
       initials = name[0].slice(0,1) + name[1].slice(0,1)
-      return (
+      className = 'MemberSelectItem'
+      if index == _t.state.selectedIndex
+        className += ' Selected'
+      li = (
         React.DOM.li
-          className: 'MemberSelectItem'
+          className: className
+          onClick: _t.selectMember
+          'data-index': index
           children: [
             React.DOM.div
               className: 'ProfileImage Small'
@@ -85,13 +101,18 @@ Canvas.MemberSelect = React.createClass
               children: [
                 React.DOM.h2
                   className: 'MemberName'
-                  children: member.name
+                  children: member.display_name
+                  'data-index': index  # Hack to get data index working?
                 React.DOM.p
                   className: 'MemberEmail'
                   children: member.email
+                  'data-index': index  # Hack to get data index working?
               ]
           ]
       )
+      index++
+      return if isFollower
+      return li
     )
     React.DOM.div
       className: 'MemberSelect'
@@ -144,20 +165,45 @@ Canvas.ItemFollowers = React.createClass
           className: 'ItemFollowersGroup'
           children: followers
       ]
+Canvas.SelectedItemID = -1
 Canvas.ItemDetails = React.createClass
   getInitialState: ->
-    return { followers: [] }
+    return { followers: [], members: [] }
   componentWillMount: ->
-    # TODO: Causing 'Uncaught Error: Invariant Violation: replaceState(...): Can only update a mounted or mounting component.' error on first load
-    $.get '/api/v1/user/items/17/followers', (resp) =>
+    url = '/api/v1/user/workspaces/' + getCookie('workspaceID')
+    $.get url, (resp) => @setState({ members: resp.members })
+    return if Canvas.SelectedItemID < 0
+    url = '/api/v1/user/items/' + Canvas.SelectedItemID + '/followers'
+    $.get url, (resp) =>
       @setState(followers: resp)
+  # componentWillReceiveProps: ->
+    # Hacking through cookie…not sure why not working
+    # TODO: Causing 'Uncaught Error: Invariant Violation: replaceState(...): Can only update a mounted or mounting component.' error on first load
+    # return if Canvas.SelectedItemID < 0
+    # url = '/api/v1/user/items/' + Canvas.SelectedItemID + '/followers'
+    # $.get url, (resp) =>
+    #   @setState(followers: resp)
   click: (event) ->
     event.stopPropagation()
+  addFollower: (user_id) ->
+    follower = null
+    for m in @state.members
+      follower = m if m.id == user_id
+    return if !follower
+    fs = @state.followers
+    fs.push(follower)
+    @setState(followers: fs)
+    # url = '/api/v1/user/items/' + Canvas.SelectedItemID + '/followers'
+    # $.post url,
+    #   follower: { user_id: follower.id },
+    #   success: => return
   render: ->
+    console.log('ItemDetails followers: ' + JSON.stringify(@state.followers))
+    console.log('ItemDetails members: ' + JSON.stringify(@state.members))
     children = []
     children.push(Canvas[@props.item.latest_content.type + 'Details'](item: @props.item)) if @props.item
-    children.push(Canvas.ItemFollowers(followers: @state.followers))
-    children.push(Canvas.MemberSelect(followers: @state.followers))
+    # children.push(Canvas.ItemFollowers(followers: @state.followers))
+    # children.push(Canvas.MemberSelect(followers: @state.followers, onAddFollower: this.addFollower))
     children.push(
       React.DOM.div
         className: 'Inset DeleteItem'
@@ -195,7 +241,7 @@ Canvas.RootItem = React.createClass
     $.ajax path,
       type: 'PATCH'
       data: { position_top: i.position_top, position_left: i.position_left }
-      success: -> console.log('Updated location of item with id ' + i.id)
+      success: -> return
   mouseMove: (event) ->
     return if @state.dragIndex < 0
     event.preventDefault()  # Prevent highlighting other things
@@ -214,7 +260,6 @@ Canvas.RootItem = React.createClass
       p = $(item).position()
       minLeft = p.left if p.left < minLeft
       minTop = p.top if p.top < minTop
-    console.log('minLeft: ' + minLeft + ',minTop: ' + minTop)
     MIN_REQ_LEFT_OFFSET = 26  # 10px width + 8px margin on sides
     MIN_REQ_TOP_OFFSET = 101   # 33px height + 8px margin on sides + 52px header
     if minLeft >= MIN_REQ_LEFT_OFFSET || minTop >= MIN_REQ_TOP_OFFSET
@@ -278,8 +323,11 @@ Canvas.RootItem = React.createClass
     cdn = [Canvas.RootItemHeader({ onAddItem: this.addItemOfType })]
     if @state.children
       cdn.push(Canvas.Item({ item: c, index: i, select: this.selectItemAtIndex, selected: (i == @state.selectedIndex), beginDrag: this.beginDraggingItemAtIndex })) for c, i in @state.children
+    selectedItem = null
     if @state.selectedIndex < 0 then selectedItem = null else selectedItem = @state.children[@state.selectedIndex]
-    cdn.push(Canvas.ItemDetails({ item: selectedItem, onRemove: this.removeSelectedItem }))
+    i = JSON.parse(JSON.stringify(selectedItem))
+    Canvas.SelectedItemID = selectedItem.id if selectedItem != null # For some reason item isn't getting passed
+    cdn.push(Canvas.ItemDetails({ item: i, onRemove: this.removeSelectedItem }))
     React.DOM.div
       className: 'Item RootItem'
       'data-item-id': @props.item.id
@@ -330,7 +378,7 @@ Canvas.Note = React.createClass
     $.ajax path,
       type: 'PATCH'
       data: { text: text }
-      success: -> console.log('Updated text of item with id ' + itemID)
+      success: -> return
   pressedKey: (event) ->
     event.stopPropagation() # Prevent backspace/delete from bubbling up to root
   render: ->

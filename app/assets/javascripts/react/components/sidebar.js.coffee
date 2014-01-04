@@ -162,7 +162,7 @@ Canvas.Workspace = React.createClass
     $('#inviteMembers').slideDown()
   render: ->
     members = @state.members.map((m) ->
-      name = m.name.split(' ')
+      name = m.display_name.split(' ')
       initials = name[0].slice(0,1) + name[1].slice(0,1)
       c = 'SidebarProfilePicture Small WorkspaceMemberProfilePicture'
       c = c + ' Inactive' if m.id < 0

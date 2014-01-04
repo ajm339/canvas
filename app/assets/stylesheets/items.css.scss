@@ -405,9 +405,12 @@
         .MemberSelectItem {
           padding: 4px 0;
           &:hover {
+            background: lighten($green, 30%);
+            cursor: pointer;
+          }
+          &.Selected {
             background: $green;
             color: white;
-            cursor: pointer;
             .MemberEmail {
               color: #DDD !important;
             }
@@ -423,6 +426,7 @@
             vertical-align: middle;
             .MemberName {
               font-size: 12px;
+              font-weight: 600;
               margin: 2px 0;
             }
             .MemberEmail {
