@@ -1,4 +1,19 @@
+pathToCurrentUser = ->
+  return '/api/v1/user'
+pathToItemID = (itemID) ->
+  return '/api/v1/user/items/' + itemID
+pathToVersionsForItemID = (itemID) ->
+  return pathToItemID(itemID) + '/versions'
+pathToFollowersForItemID = (itemID) ->
+  return pathToItemID(itemID) + '/followers'
+pathToWorkspaces = ->
+  return '/api/v1/user/workspaces'
+pathToWorkspaceID = (workspaceID) ->
+  return pathToWorkspaces() + '/' + workspaceID
+
 window.Canvas or= {}
+Canvas.CurrentUser = {}
+
 Canvas.DragHandle = React.createClass
   getInitialState: ->
     return { isDragging: false, xOffset: 0 }
@@ -44,10 +59,7 @@ Canvas.RootItemHeader = React.createClass
 
 Canvas.MemberSelect = React.createClass
   getInitialState: ->
-    return { filteredMembers: [], allMembers: [], selectedIndex: -1 }
-  componentWillMount: ->
-    $.get '/api/v1/user/workspaces/' + getCookie('workspaceID'), (resp) =>
-      @setState(filteredMembers: resp.members, allMembers: resp.members)
+    return { filteredMembers: @props.members, allMembers: @props.members, selectedIndex: -1 }
   filterChanged: (event) ->
     searchText = $(event.target).val()
     members = @state.allMembers
@@ -168,21 +180,22 @@ Canvas.ItemFollowers = React.createClass
 Canvas.SelectedItemID = -1
 Canvas.ItemDetails = React.createClass
   getInitialState: ->
-    return { followers: [], members: [] }
+    # Hacking current user in — TODO: don't know why it's not working
+    return { followers: [Canvas.CurrentUser], members: @props.members || [], isInitial: true }
+  getFollowersForItemID: (itemID) ->
+    console.log('getFollowersForItemID')
+    $.get pathToFollowersForItemID(itemID), (resp) =>
+      if resp.length < 1
+        $.get pathToCurrentUser, (resp) =>
+          @setState(followers: [resp])
+      else
+        @setState(followers: resp)
   componentWillMount: ->
-    url = '/api/v1/user/workspaces/' + getCookie('workspaceID')
-    $.get url, (resp) => @setState({ members: resp.members })
-    return if Canvas.SelectedItemID < 0
-    url = '/api/v1/user/items/' + Canvas.SelectedItemID + '/followers'
-    $.get url, (resp) =>
-      @setState(followers: resp)
-  # componentWillReceiveProps: ->
-    # Hacking through cookie…not sure why not working
-    # TODO: Causing 'Uncaught Error: Invariant Violation: replaceState(...): Can only update a mounted or mounting component.' error on first load
-    # return if Canvas.SelectedItemID < 0
-    # url = '/api/v1/user/items/' + Canvas.SelectedItemID + '/followers'
-    # $.get url, (resp) =>
-    #   @setState(followers: resp)
+    @getFollowersForItemID(Canvas.SelectedItemID) if Canvas.SelectedItemID > 0
+  componentWillReceiveProps: (nextProps) ->
+    @setState(members: nextProps.members) if nextProps.members
+    # @getFollowersForItemID(nextProps.itemID) if @state.isInitial && nextProps.itemID && nextProps.itemID >= 0
+    # @setState(isInitial: false)
   click: (event) ->
     event.stopPropagation()
   addFollower: (user_id) ->
@@ -193,17 +206,15 @@ Canvas.ItemDetails = React.createClass
     fs = @state.followers
     fs.push(follower)
     @setState(followers: fs)
-    # url = '/api/v1/user/items/' + Canvas.SelectedItemID + '/followers'
-    # $.post url,
-    #   follower: { user_id: follower.id },
-    #   success: => return
+    url = '/api/v1/user/items/' + Canvas.SelectedItemID + '/followers'
+    $.post url,
+      follower: { user_id: follower.id },
+      success: => return
   render: ->
-    console.log('ItemDetails followers: ' + JSON.stringify(@state.followers))
-    console.log('ItemDetails members: ' + JSON.stringify(@state.members))
     children = []
     children.push(Canvas[@props.item.latest_content.type + 'Details'](item: @props.item)) if @props.item
-    # children.push(Canvas.ItemFollowers(followers: @state.followers))
-    # children.push(Canvas.MemberSelect(followers: @state.followers, onAddFollower: this.addFollower))
+    children.push(Canvas.ItemFollowers(followers: @state.followers))
+    children.push(Canvas.MemberSelect(followers: @state.followers, onAddFollower: this.addFollower, members: @state.members))
     children.push(
       React.DOM.div
         className: 'Inset DeleteItem'
@@ -221,11 +232,13 @@ Canvas.RootItem = React.createClass
   getInitialState: ->
     # TODO: Get root item here, rather than in ItemsContainer
     if !@props.item 
-      return { left: 0, top: 0, children: [], selectedIndex: -1, dragIndex: -1, dragDiff: 0 }
+      return { left: 0, top: 0, children: [], selectedIndex: -1, dragIndex: -1, dragDiff: 0, workspaceMembers: [] }
     else
-      return { left: 0, top: 0, children: @props.item.children || [], selectedIndex: -1, dragIndex: -1, dragDiff: 0 }
+      return { left: 0, top: 0, children: @props.item.children || [], selectedIndex: -1, dragIndex: -1, dragDiff: 0, workspaceMembers: [] }
   componentWillMount: ->
     window.addEventListener('keydown', this.pressedKey, true)
+    $.get pathToWorkspaceID(Canvas.WorkspaceID), (resp) => @setState(workspaceMembers: resp.members)
+    $.get pathToCurrentUser(), (resp) => Canvas.CurrentUser = resp
   componentWillUnmount: ->
     window.removeEventListener('keydown', this.pressedKey, true)
   componentWillReceiveProps: (nextProps) ->
@@ -284,7 +297,7 @@ Canvas.RootItem = React.createClass
     currChildren = @state.children
     currIndex = currChildren.length
     currChildren.push(child)
-    @setState({ children: currChildren })
+    @setState({ children: currChildren, selectedIndex: currIndex })
     $.post '/api/v1/user/items',
       item: child,
       parent_id: @props.item.id
@@ -325,9 +338,8 @@ Canvas.RootItem = React.createClass
       cdn.push(Canvas.Item({ item: c, index: i, select: this.selectItemAtIndex, selected: (i == @state.selectedIndex), beginDrag: this.beginDraggingItemAtIndex })) for c, i in @state.children
     selectedItem = null
     if @state.selectedIndex < 0 then selectedItem = null else selectedItem = @state.children[@state.selectedIndex]
-    i = JSON.parse(JSON.stringify(selectedItem))
     Canvas.SelectedItemID = selectedItem.id if selectedItem != null # For some reason item isn't getting passed
-    cdn.push(Canvas.ItemDetails({ item: i, onRemove: this.removeSelectedItem }))
+    cdn.push(Canvas.ItemDetails({ itemID: Canvas.SelectedItemID, onRemove: this.removeSelectedItem, members: @state.workspaceMembers })) if @state.selectedIndex >= 0
     React.DOM.div
       className: 'Item RootItem'
       'data-item-id': @props.item.id

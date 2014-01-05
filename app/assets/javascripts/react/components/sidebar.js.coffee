@@ -3,6 +3,7 @@
 # to avoid polluting the global namespace
 window.Canvas or= {}
 # Create components under our namespace
+Canvas.WorkspaceID = getCookie('workspaceID') || -1
 Canvas.SidebarProfile = React.createClass
   getInitialState: ->
     $.get '/api/v1/user', (resp) =>
@@ -275,6 +276,7 @@ Canvas.Sidebar = React.createClass
     return { workspaceID: getCookie('workspaceID') || -1 }
   selectWorkspace: (id) ->
     setCookie('workspaceID', id, 7300)
+    Canvas.WorkspaceID = id
     @setState(workspaceID: id)
   showAllWorkspaces: ->
     setCookie('workspaceID', -1, 7300)

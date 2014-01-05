@@ -360,7 +360,8 @@
     bottom: 0;
     // padding: 12px;
     position: absolute;
-    right: -228px;
+    // right: -228px;
+    right: 0;
     top: 52px;
     @include vendor-prefix(transition, right 0.15s);
     width: 200px;
