@@ -3,6 +3,7 @@
 # to avoid polluting the global namespace
 window.Canvas or= {}
 # Create components under our namespace
+Canvas.WorkspaceID = getCookie('workspaceID') || -1
 Canvas.SidebarProfile = React.createClass
   getInitialState: ->
     $.get '/api/v1/user', (resp) =>
@@ -162,7 +163,7 @@ Canvas.Workspace = React.createClass
     $('#inviteMembers').slideDown()
   render: ->
     members = @state.members.map((m) ->
-      name = m.name.split(' ')
+      name = m.display_name.split(' ')
       initials = name[0].slice(0,1) + name[1].slice(0,1)
       c = 'SidebarProfilePicture Small WorkspaceMemberProfilePicture'
       c = c + ' Inactive' if m.id < 0
@@ -275,6 +276,7 @@ Canvas.Sidebar = React.createClass
     return { workspaceID: getCookie('workspaceID') || -1 }
   selectWorkspace: (id) ->
     setCookie('workspaceID', id, 7300)
+    Canvas.WorkspaceID = id
     @setState(workspaceID: id)
   showAllWorkspaces: ->
     setCookie('workspaceID', -1, 7300)

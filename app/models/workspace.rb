@@ -21,6 +21,6 @@ class Workspace < ActiveRecord::Base
   end
 
   def as_json(options={})
-    super.merge(members: self.users.map(&:display_json), invites: self.invites.map(&:display_json))
+    super.merge(members: self.users.map(&:as_json), invites: self.invites.map(&:display_json))
   end
 end
